@@ -1,6 +1,6 @@
 ================================================================================
            PROTOCOLX RISC-V 5-STAGE PROCESSOR - FULL VERIFICATION SUITE         
-                       Execution Date: Sat Nov 14 17:09:18 IST 2026                                  
+                       Execution Date: Wed Nov 18 20:17:43 IST 2026                                  
 ================================================================================
 
 >>> 1. Running ALU Unit Test...
@@ -130,7 +130,7 @@ VCD info: dumpfile simulation/waveform_hazard.vcd opened for output.
 Hazard Forwarding Summary: 4 Passed, 0 Failed
 ===============================================================================
 >>> RAW DATA HAZARD FORWARDING VERIFIED WITHOUT PERFORMANCE BUBBLES. <<<
-testbench/tb_riscv_hazard.v:89: $finish called at 166000 (1ps)
+testbench/tb_riscv_hazard.v:96: $finish called at 166000 (1ps)
 
 >>> 6. Running Core Memory & Load-Use Stall Test...
 WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_load_store.hex): Not enough words in the file for the requested range [0:1023].
@@ -212,6 +212,28 @@ Branch & Flush Summary: 5 Passed, 0 Failed
 ===============================================================================
 >>> CONTROL HAZARD PIPELINE FLUSHING FULLY VERIFIED. <<<
 testbench/tb_riscv_branch.v:91: $finish called at 196000 (1ps)
+
+>>> 8. Running Instruction Subset (ADD/SUB/ADDI/LW/SW/BEQ/BNE) & CPI Test...
+WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_subset.hex): Not enough words in the file for the requested range [0:1023].
+VCD info: dumpfile simulation/waveform_subset.vcd opened for output.
+===============================================================================
+   PROTOCOLX RISC-V INSTRUCTION SUBSET (ADD SUB ADDI LW SW BEQ BNE) & CPI TEST  
+===============================================================================
+[PASS] x01 = 15 | BNE loop sum 5+4+3+2+1
+[PASS] x02 = 0 | BNE loop counter reached 0
+[PASS] x03 = 15 | LW reads value stored by SW
+[PASS] x04 = 30 | ADD after load-use stall
+[PASS] x05 = 15 | SUB
+[PASS] x06 = 0 | skipped by taken BEQ (flushed)
+[PASS] x07 = 1 | BEQ target executed
+[PASS] mem[0] = 15 | SW wrote data memory
+[PASS] completed in 38 cycles (expected 38)
+-------------------------------------------------------------------------------
+PERFORMANCE (measured): instructions = 23 | cycles = 38 | stall cycles = 1 | taken-branch flushes = 5
+CPI (incl. 4-cycle pipeline fill) = 1.65 | CPI (steady state, excl. fill) = 1.48
+Subset & CPI Summary: 9 Passed, 0 Failed
+===============================================================================
+testbench/tb_riscv_subset.v:124: $finish called at 416000 (1ps)
 
 ================================================================================
            ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY!                      

@@ -54,6 +54,17 @@ iverilog -g2012 -Irtl -o "${SCRIPT_DIR}/tb_riscv_branch.vvp" rtl/riscv_defines.v
 vvp "${SCRIPT_DIR}/tb_riscv_branch.vvp" | tee -a "${LOG_FILE}"
 rm -f "${SCRIPT_DIR}/tb_riscv_branch.vvp"
 
+echo -e "\n>>> 8. Running Instruction Subset (ADD/SUB/ADDI/LW/SW/BEQ/BNE) & CPI Test..." | tee -a "${LOG_FILE}"
+iverilog -g2012 -Irtl -o "${SCRIPT_DIR}/tb_riscv_subset.vvp" rtl/riscv_defines.vh rtl/*.v testbench/tb_riscv_subset.v
+vvp "${SCRIPT_DIR}/tb_riscv_subset.vvp" | tee -a "${LOG_FILE}"
+rm -f "${SCRIPT_DIR}/tb_riscv_subset.vvp"
+
+# vvp exits 0 even when checks fail, so decide pass/fail from the logged results.
 echo -e "\n================================================================================" | tee -a "${LOG_FILE}"
+if grep -qE "^\[FAIL\]|Failed = [1-9]|[1-9][0-9]* Failed" "${LOG_FILE}"; then
+    echo "           VERIFICATION FAILED - see [FAIL] lines above                         " | tee -a "${LOG_FILE}"
+    echo "================================================================================" | tee -a "${LOG_FILE}"
+    exit 1
+fi
 echo "           ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY!                      " | tee -a "${LOG_FILE}"
 echo "================================================================================" | tee -a "${LOG_FILE}"

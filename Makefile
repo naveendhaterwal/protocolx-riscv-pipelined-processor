@@ -8,6 +8,8 @@ IV = iverilog
 VVP = vvp
 IVFLAGS = -g2012 -Irtl
 
+.PHONY: all test test_core test_hazard test_mem test_branch test_alu test_subset synth clean
+
 all: test
 
 test:
@@ -43,6 +45,20 @@ test_alu:
 	$(IV) $(IVFLAGS) -o simulation/tb_alu.vvp rtl/alu.v testbench/tb_alu.v
 	$(VVP) simulation/tb_alu.vvp
 	@rm -f simulation/tb_alu.vvp
+
+test_subset:
+	@echo "Running full instruction subset (ADD/SUB/ADDI/LW/SW/BEQ/BNE) and CPI test..."
+	$(IV) $(IVFLAGS) -o simulation/tb_riscv_subset.vvp rtl/riscv_defines.vh rtl/*.v testbench/tb_riscv_subset.v
+	$(VVP) simulation/tb_riscv_subset.vvp
+	@rm -f simulation/tb_riscv_subset.vvp
+
+# Synthesis check with Yosys (Xilinx 7-series mapping). Instruction memory is a
+# black box so its contents are not constant-folded away; resource numbers are
+# Yosys estimates, not Vivado post-implementation results.
+synth:
+	@echo "Synthesising riscv_core with Yosys (synth_xilinx, xc7)..."
+	yosys -q -l synth/synth_report.log -p "read_verilog -Irtl rtl/riscv_defines.vh synth/imem_blackbox.v $$(ls rtl/*.v | grep -v -e instruction_memory -e mem_align_unit | tr '\n' ' '); hierarchy -top riscv_core -chparam DMEM_DEPTH 64; synth_xilinx -top riscv_core -flatten -family xc7; tee -o synth/utilization.txt stat"
+	@echo "Synthesis OK. Utilization written to synth/utilization.txt"
 
 clean:
 	@echo "Cleaning up generated vvp and temporary simulation files..."
