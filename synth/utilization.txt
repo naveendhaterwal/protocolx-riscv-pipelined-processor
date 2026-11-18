@@ -1,0 +1,29 @@
+
+18. Printing statistics.
+
+=== riscv_core ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     2986 wires
+    10927 wire bits
+       13 public wires
+      172 public wire bits
+        7 ports
+      104 port bits
+     6431 cells
+       11   $scopeinfo
+        1   BUFG
+       46   CARRY4
+     3569   FDCE
+        4   FDPE
+        2   IBUF
+        2   INV
+      177   LUT2
+      241   LUT3
+      423   LUT4
+      543   LUT5
+     1309   LUT6
+      102   OBUF
+        1   instruction_memory
+

@@ -65,8 +65,33 @@ module pipe_id_ex (
     output reg  [`REG_ADDR_WIDTH-1:0] rs2_out
 );
 
+    // Asynchronous reset is kept separate from the synchronous flush: an
+    // async-reset branch may test only the reset signal, otherwise synthesis
+    // fails ("Multiple edge sensitive events"). Flush inserts a bubble (NOP).
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || flush) begin
+        if (!rst_n) begin
+            reg_write_out  <= 1'b0;
+            mem_to_reg_out <= 2'b00;
+            mem_read_out   <= 1'b0;
+            mem_write_out  <= 1'b0;
+            alu_src_out    <= 1'b0;
+            alu_src_a_out  <= 1'b0;
+            branch_out     <= 1'b0;
+            jump_out       <= 1'b0;
+            is_jalr_out    <= 1'b0;
+            alu_op_out     <= `ALU_ADD;
+
+            pc_out         <= {`XLEN{1'b0}};
+            pc_plus4_out   <= {`XLEN{1'b0}};
+            read_data1_out <= {`XLEN{1'b0}};
+            read_data2_out <= {`XLEN{1'b0}};
+            immediate_out  <= {`XLEN{1'b0}};
+            funct3_out     <= 3'b000;
+            funct7_out     <= 7'b0000000;
+            rd_out         <= 5'd0;
+            rs1_out        <= 5'd0;
+            rs2_out        <= 5'd0;
+        end else if (flush) begin
             reg_write_out  <= 1'b0;
             mem_to_reg_out <= 2'b00;
             mem_read_out   <= 1'b0;
