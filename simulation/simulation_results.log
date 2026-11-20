@@ -1,6 +1,6 @@
 ================================================================================
            PROTOCOLX RISC-V 5-STAGE PROCESSOR - FULL VERIFICATION SUITE         
-                       Execution Date: Wed Nov 18 20:17:43 IST 2026                                  
+                       Execution Date: Fri Nov 20 19:28:38 IST 2026                                  
 ================================================================================
 
 >>> 1. Running ALU Unit Test...
@@ -95,7 +95,7 @@ Executing test program: testbench/programs/prog_arithmetic.hex
 Verification Summary: 10 Passed, 0 Failed
 ===============================================================================
 >>> ALL ASSERTIONS PASSED! 5-STAGE PIPELINE FUNCTIONALITY VERIFIED. <<<
-testbench/tb_riscv_core.v:94: $finish called at 266000 (1ps)
+testbench/tb_riscv_core.v:97: $finish called at 266000 (1ps)
 
 >>> 5. Running Core RAW Data Hazard Forwarding Test...
 WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_hazard.hex): Not enough words in the file for the requested range [0:1023].
@@ -130,7 +130,7 @@ VCD info: dumpfile simulation/waveform_hazard.vcd opened for output.
 Hazard Forwarding Summary: 4 Passed, 0 Failed
 ===============================================================================
 >>> RAW DATA HAZARD FORWARDING VERIFIED WITHOUT PERFORMANCE BUBBLES. <<<
-testbench/tb_riscv_hazard.v:96: $finish called at 166000 (1ps)
+testbench/tb_riscv_hazard.v:99: $finish called at 166000 (1ps)
 
 >>> 6. Running Core Memory & Load-Use Stall Test...
 WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_load_store.hex): Not enough words in the file for the requested range [0:1023].
@@ -172,7 +172,7 @@ VCD info: dumpfile simulation/waveform_mem.vcd opened for output.
 Memory & Stall Summary: 6 Passed, 0 Failed
 ===============================================================================
 >>> DATA MEMORY INTERFACE AND LOAD-USE INTERLOCKING FULLY VERIFIED. <<<
-testbench/tb_riscv_mem.v:91: $finish called at 216000 (1ps)
+testbench/tb_riscv_mem.v:94: $finish called at 216000 (1ps)
 
 >>> 7. Running Core Branch & Control Hazard Flush Test...
 WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_branch.hex): Not enough words in the file for the requested range [0:1023].
@@ -211,7 +211,7 @@ VCD info: dumpfile simulation/waveform_branch.vcd opened for output.
 Branch & Flush Summary: 5 Passed, 0 Failed
 ===============================================================================
 >>> CONTROL HAZARD PIPELINE FLUSHING FULLY VERIFIED. <<<
-testbench/tb_riscv_branch.v:91: $finish called at 196000 (1ps)
+testbench/tb_riscv_branch.v:94: $finish called at 196000 (1ps)
 
 >>> 8. Running Instruction Subset (ADD/SUB/ADDI/LW/SW/BEQ/BNE) & CPI Test...
 WARNING: rtl/instruction_memory.v:28: $readmemh(testbench/programs/prog_subset.hex): Not enough words in the file for the requested range [0:1023].
@@ -233,7 +233,40 @@ PERFORMANCE (measured): instructions = 23 | cycles = 38 | stall cycles = 1 | tak
 CPI (incl. 4-cycle pipeline fill) = 1.65 | CPI (steady state, excl. fill) = 1.48
 Subset & CPI Summary: 9 Passed, 0 Failed
 ===============================================================================
-testbench/tb_riscv_subset.v:124: $finish called at 416000 (1ps)
+testbench/tb_riscv_subset.v:128: $finish called at 416000 (1ps)
+
+>>> 9. Assembling Phase II test programs (tools/rvasm.py)...
+wrote /Users/n2/Desktop/mca project/testbench/programs/isa_test.s: 234 tests
+testbench/programs/bench_fib.s: 19 instructions -> testbench/programs/bench_fib.hex
+testbench/programs/bench_matmul.s: 60 instructions -> testbench/programs/bench_matmul.hex
+testbench/programs/bench_sort.s: 47 instructions -> testbench/programs/bench_sort.hex
+testbench/programs/bench_sum.s: 28 instructions -> testbench/programs/bench_sum.hex
+testbench/programs/isa_test.s: 1690 instructions -> testbench/programs/isa_test.hex
+testbench/programs/trap_test.s: 124 instructions -> testbench/programs/trap_test.hex
+
+>>> 10. Running RV32IM instruction test + trap/interrupt test (predictor on and off)...
+RESULT PASS | testbench/programs/isa_test.hex | bp=1 | cycles=1739 instret=1700 CPI=1.022 | branches=276 mispredicts=15 stall_cycles=1 traps=0
+RESULT PASS | testbench/programs/isa_test.hex | bp=0 | cycles=1751 instret=1700 CPI=1.030 | branches=276 mispredicts=21 stall_cycles=1 traps=0
+RESULT PASS | testbench/programs/trap_test.hex | bp=1 | cycles=359 instret=309 CPI=1.161 | branches=102 mispredicts=8 stall_cycles=2 traps=6
+RESULT PASS | testbench/programs/trap_test.hex | bp=0 | cycles=453 instret=291 CPI=1.556 | branches=96 mispredicts=65 stall_cycles=2 traps=6
+
+>>> 11. Running Phase II unit tests (GPIO, load align, branch predictor, perf counter)...
+[PASS] Memory-Mapped GPIO write verified: 0xa5a5a5a5
+[PASS] LB signed extension verified
+[PASS] LBU zero extension verified
+[PASS] LW pass-through verified
+[PASS] Default prediction is NOT TAKEN
+[PASS] Successfully trained to STRONGLY TAKEN (predict=1)
+[PASS] Successfully transitioned back to NOT TAKEN (predict=0)
+>>> ALL 2-BIT BRANCH PREDICTOR TESTS PASSED! <<<
+[PASS] Performance Counter: 12 cycles, 5 retired insts
+
+>>> 12. Running benchmarks: pipeline (predictor on/off) and single-cycle baseline...
+benchmark      | single-cycle (cycles, CPI) | pipeline, no predictor     | pipeline + 2-bit predictor | mispredicts off -> on
+bench_fib      | 160 cyc, CPI 1.000         | 222 cyc, CPI 1.387         | 168 cyc, CPI 1.050         | 29 -> 2
+bench_matmul   | 8638 cyc, CPI 1.000        | 10302 cyc, CPI 1.192       | 9330 cyc, CPI 1.080        | 574 -> 88
+bench_sort     | 3973 cyc, CPI 1.000        | 6224 cyc, CPI 1.566        | 4930 cyc, CPI 1.240        | 860 -> 213
+bench_sum      | 654 cyc, CPI 1.000         | 974 cyc, CPI 1.489         | 730 cyc, CPI 1.116         | 126 -> 4
 
 ================================================================================
            ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY!                      

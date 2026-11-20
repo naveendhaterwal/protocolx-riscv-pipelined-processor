@@ -137,6 +137,8 @@ protocolx-riscv-pipelined-processor/
 
 ## ⚡ Quickstart: Running Simulations
 
+> New here? Start with [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md).
+
 ### Prerequisites
 You need **Icarus Verilog** (`iverilog`) and **GTKWave** (optional, for viewing waveforms).
 - On macOS (Homebrew):
@@ -173,29 +175,29 @@ gtkwave simulation/waveform.vcd
 
 ---
 
-## 📊 Verification Results (Phase I)
+## 📊 Verification Results
 
-All 42 automated assertions passed with zero failures across seven testbenches:
+`make test` runs everything below and ends with **ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY** (or exits with an error if any check fails).
 
-```
-================================================================================
-           PROTOCOLX RISC-V 5-STAGE PROCESSOR - FULL VERIFICATION SUITE         
-================================================================================
+| Suite | Checks | Result |
+|---|---|---|
+| Phase I unit + pipeline testbenches (ALU, register file, hazard unit, arithmetic, forwarding, load-use, branch flush, instruction subset) | 51 | ✅ all pass |
+| `isa_test` — **234 generated tests** covering every RV32IM instruction + CSRs (predictor on and off) | 234 × 2 | ✅ pass |
+| `trap_test` — ECALL, EBREAK, illegal instruction, timer + external interrupts, GPIO, precise traps (predictor on and off) | 9 groups × 2 | ✅ pass |
+| Benchmarks on 3 designs (self-checking) | 4 × 3 | ✅ pass |
 
->>> 1. ALU Unit Test............................. [PASS 10/10]
->>> 2. Register File Test (x0 check & bypass).... [PASS  3/3]
->>> 3. Hazard Unit Test (fwd, stall & flush)..... [PASS  4/4]
->>> 4. Full Pipeline Arithmetic Program.......... [PASS 10/10]
->>> 5. RAW Data Hazard Forwarding Program........ [PASS  4/4]
->>> 6. Memory Load/Store & Load-Use Stall........ [PASS  6/6]
->>> 7. Branch Condition & Pipeline Flush......... [PASS  5/5]
+### Benchmarks (cycles measured by the hardware counters)
 
---------------------------------------------------------------------------------
-TOTAL ASSERTIONS: 42 | PASSED: 42 (100%) | FAILED: 0
-================================================================================
-```
+| Benchmark | Single-cycle baseline | Pipeline, no predictor | Pipeline + 2-bit predictor |
+|---|---|---|---|
+| `bench_fib` (Fibonacci 30) | 160 cycles, CPI 1.000 | 222, CPI 1.387 | 168, CPI **1.050** |
+| `bench_sum` (array sum) | 654, CPI 1.000 | 974, CPI 1.489 | 730, CPI **1.116** |
+| `bench_sort` (bubble sort) | 3973, CPI 1.000 | 6224, CPI 1.566 | 4930, CPI **1.240** |
+| `bench_matmul` (8×8 with MUL) | 8638, CPI 1.000 | 10302, CPI 1.192 | 9330, CPI **1.080** |
 
-A complete cycle-by-cycle execution trace can be found in [`simulation/simulation_results.log`](simulation/simulation_results.log).
+The pipeline has a higher CPI than the single-cycle core but a much shorter clock: its longest logic path is **21 LUT levels vs 40** (multiply/divide unit excluded). Synthesis (Yosys, Xilinx 7-series): **7,201 LUTs, 2,022 flip-flops**; the combinational multiply/divide unit alone is 58 % of the LUTs. Full analysis: [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md#7-results).
+
+A complete log of the last run is in [`simulation/simulation_results.log`](simulation/simulation_results.log).
 
 ---
 
@@ -221,12 +223,22 @@ A 5-minute video presentation covering the project introduction, member roles, a
 - [x] Real simulation runs, testbenches, and waveforms.
 - [x] IEEE Phase I Project Report and architecture diagrams.
 
-### Pending / Planned for Phase II:
-- [ ] Control and Status Registers (CSRs) for exception handling.
-- [ ] Hardware timer and external interrupts.
-- [ ] Dynamic branch prediction (2-bit saturating branch history table).
-- [ ] RV32M hardware multiplier and divider extension.
-- [ ] Synthesis and FPGA prototype demo on a Xilinx Artix-7 / Basys 3 board.
+### Completed in Phase II:
+- [x] Dynamic branch prediction: 2-bit saturating counters, target decoded in IF (no BTB needed).
+- [x] RV32M multiply / divide / remainder (all 8 instructions, spec-defined edge cases).
+- [x] Byte and half-word loads/stores (LB, LH, LBU, LHU, SB, SH) with byte enables.
+- [x] CSRs (Zicsr), ECALL / EBREAK / MRET, illegal-instruction trap, precise traps.
+- [x] Machine timer and external interrupts.
+- [x] Memory-mapped GPIO (inputs and outputs) and hardware performance counters (`mcycle`, `minstret`).
+- [x] Single-cycle baseline core and 4 self-checking benchmarks for CPI comparison.
+- [x] Synthesis with Yosys + logic-depth analysis (longest path reduced from 27 to 21 LUT levels).
+- [x] Own assembler (`tools/rvasm.py`) and a generated 234-test instruction test.
+- [x] [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md): how everything works, problems faced, design choices and alternatives.
+
+### Still open (future work):
+- [ ] FPGA prototype on a Xilinx Artix-7 / Basys 3 board with Vivado timing (real Fmax).
+- [ ] Multi-cycle divider (the combinational divider is the slowest and largest block).
+- [ ] Misaligned-access exceptions, JAL prediction, caches.
 
 ---
 

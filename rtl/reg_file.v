@@ -11,7 +11,13 @@
 `timescale 1ns / 1ps
 `include "riscv_defines.vh"
 
-module reg_file (
+module reg_file #(
+    // BYPASS = 1 (pipeline): a register being written this cycle is read as the NEW
+    // value, so WB -> ID needs no extra stall. BYPASS = 0 (single-cycle core): the
+    // write data depends on the read data in the same cycle, so a bypass would make
+    // a combinational loop; there the value is simply visible from the next cycle.
+    parameter BYPASS = 1
+)(
     input  wire                      clk,
     input  wire                      rst_n,
     input  wire                      reg_write,
@@ -39,11 +45,11 @@ module reg_file (
 
     // Asynchronous read ports with write-through bypass for same-cycle WB/ID hazard
     assign read_data1 = (read_addr1 == 5'd0) ? {`XLEN{1'b0}} :
-                        (reg_write && (read_addr1 == write_addr)) ? write_data :
+                        (BYPASS && reg_write && (read_addr1 == write_addr)) ? write_data :
                         registers[read_addr1];
 
     assign read_data2 = (read_addr2 == 5'd0) ? {`XLEN{1'b0}} :
-                        (reg_write && (read_addr2 == write_addr)) ? write_data :
+                        (BYPASS && reg_write && (read_addr2 == write_addr)) ? write_data :
                         registers[read_addr2];
 
 endmodule

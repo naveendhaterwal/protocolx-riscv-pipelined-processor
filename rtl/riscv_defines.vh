@@ -29,6 +29,8 @@
 `define OPCODE_JALR      7'b1100111 // Jump and Link Register
 `define OPCODE_LUI       7'b0110111 // Load Upper Immediate
 `define OPCODE_AUIPC     7'b0010111 // Add Upper Immediate to PC
+`define OPCODE_FENCE     7'b0001111 // FENCE (memory ordering) - treated as NOP
+`define OPCODE_SYSTEM    7'b1110011 // ECALL, EBREAK, MRET, CSR instructions (Phase II)
 
 // -----------------------------------------------------------------------------
 // Funct3 Field Definitions
@@ -59,6 +61,7 @@
 // -----------------------------------------------------------------------------
 `define FUNCT7_STANDARD  7'b0000000
 `define FUNCT7_ALT       7'b0100000 // SUB, SRA, SRAI
+`define FUNCT7_MULDIV    7'b0000001 // RV32M: MUL, MULH, DIV, REM ... (Phase II)
 
 // -----------------------------------------------------------------------------
 // ALU Control Operations (4-bit encoding)
@@ -86,5 +89,36 @@
 // NOP Instruction Encoding (addi x0, x0, 0)
 // -----------------------------------------------------------------------------
 `define INSTR_NOP        32'h00000013
+
+// -----------------------------------------------------------------------------
+// Phase II: memory map. Addresses with bit 31 = 1 go to devices, not to RAM.
+// -----------------------------------------------------------------------------
+`define MMIO_GPIO_OUT     32'h80000000 // R/W: LEDs / output pins
+`define MMIO_GPIO_IN      32'h80000004 // R  : switches / input pins
+`define MMIO_MTIME_LO     32'h80000010 // R/W: timer counter, low 32 bits
+`define MMIO_MTIME_HI     32'h80000014 // R/W: timer counter, high 32 bits
+`define MMIO_MTIMECMP_LO  32'h80000018 // R/W: timer compare, low 32 bits
+`define MMIO_MTIMECMP_HI  32'h8000001C // R/W: timer compare, high 32 bits
+`define MMIO_TOHOST       32'h800000F0 // W  : test programs write their result here (simulation)
+
+// -----------------------------------------------------------------------------
+// Phase II: CSR (Control and Status Register) addresses, machine mode only.
+// -----------------------------------------------------------------------------
+`define CSR_MSTATUS   12'h300
+`define CSR_MIE       12'h304
+`define CSR_MTVEC     12'h305
+`define CSR_MSCRATCH  12'h340
+`define CSR_MEPC      12'h341
+`define CSR_MCAUSE    12'h342
+`define CSR_MTVAL     12'h343
+`define CSR_MIP       12'h344
+`define CSR_MCYCLE    12'hB00
+`define CSR_MINSTRET  12'hB02
+`define CSR_MCYCLEH   12'hB80
+`define CSR_MINSTRETH 12'hB82
+`define CSR_CYCLE     12'hC00
+`define CSR_INSTRET   12'hC02
+`define CSR_CYCLEH    12'hC80
+`define CSR_INSTRETH  12'hC82
 
 `endif // RISCV_DEFINES_VH
