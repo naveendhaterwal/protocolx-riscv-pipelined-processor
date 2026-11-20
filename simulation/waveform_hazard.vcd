@@ -1,5 +1,5 @@
 $date
-	Fri Nov 20 19:28:38 2026
+	Fri Nov 20 19:49:40 2026
 $end
 $version
 	Icarus Verilog
@@ -490,6 +490,8 @@ $var wire 32 N$ read_data2 [31:0] $end
 $var wire 32 O$ read_data1 [31:0] $end
 $var parameter 32 P$ BYPASS $end
 $var integer 32 Q$ i [31:0] $end
+$scope begin g_bypass $end
+$upscope $end
 $upscope $end
 $scope module u_store_align $end
 $var wire 2 R$ byte_offset [1:0] $end
