@@ -13,12 +13,15 @@
 module pipe_ex_mem (
     input  wire                      clk,
     input  wire                      rst_n,
+    input  wire                      flush,          // Phase II: trap in EX -> insert bubble
 
     // Control Signals Input
     input  wire                      reg_write_in,
     input  wire [1:0]                mem_to_reg_in,
     input  wire                      mem_read_in,
     input  wire                      mem_write_in,
+    input  wire                      valid_in,
+    input  wire [2:0]                funct3_in,      // Phase II: LB/LH/LW/SB/SH... in MEM
 
     // Datapath Values Input
     input  wire [`XLEN-1:0]          pc_plus4_in,
@@ -31,6 +34,8 @@ module pipe_ex_mem (
     output reg  [1:0]                mem_to_reg_out,
     output reg                       mem_read_out,
     output reg                       mem_write_out,
+    output reg                       valid_out,
+    output reg  [2:0]                funct3_out,
 
     // Datapath Values Output
     output reg  [`XLEN-1:0]          pc_plus4_out,
@@ -39,12 +44,30 @@ module pipe_ex_mem (
     output reg  [`REG_ADDR_WIDTH-1:0] rd_out
 );
 
+    // Reset (asynchronous) and flush (synchronous) are separate branches:
+    // an async-reset branch may only test the reset signal, or synthesis fails.
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             reg_write_out  <= 1'b0;
             mem_to_reg_out <= 2'b00;
             mem_read_out   <= 1'b0;
             mem_write_out  <= 1'b0;
+            valid_out      <= 1'b0;
+            funct3_out     <= 3'b000;
+
+            pc_plus4_out   <= {`XLEN{1'b0}};
+            alu_result_out <= {`XLEN{1'b0}};
+            write_data_out <= {`XLEN{1'b0}};
+            rd_out         <= 5'd0;
+        end else if (flush) begin
+            // A bubble only needs its "do something" bits cleared: it must not
+            // write a register, touch memory, or count as a retired instruction.
+            reg_write_out  <= 1'b0;
+            mem_to_reg_out <= 2'b00;
+            mem_read_out   <= 1'b0;
+            mem_write_out  <= 1'b0;
+            valid_out      <= 1'b0;
+            funct3_out     <= 3'b000;
 
             pc_plus4_out   <= {`XLEN{1'b0}};
             alu_result_out <= {`XLEN{1'b0}};
@@ -55,6 +78,8 @@ module pipe_ex_mem (
             mem_to_reg_out <= mem_to_reg_in;
             mem_read_out   <= mem_read_in;
             mem_write_out  <= mem_write_in;
+            valid_out      <= valid_in;
+            funct3_out     <= funct3_in;
 
             pc_plus4_out   <= pc_plus4_in;
             alu_result_out <= alu_result_in;

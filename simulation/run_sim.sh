@@ -59,6 +59,31 @@ iverilog -g2012 -Irtl -o "${SCRIPT_DIR}/tb_riscv_subset.vvp" rtl/riscv_defines.v
 vvp "${SCRIPT_DIR}/tb_riscv_subset.vvp" | tee -a "${LOG_FILE}"
 rm -f "${SCRIPT_DIR}/tb_riscv_subset.vvp"
 
+# ---------------------------------------------------------------- Phase II
+echo -e "\n>>> 9. Assembling Phase II test programs (tools/rvasm.py)..." | tee -a "${LOG_FILE}"
+python3 tools/gen_isa_test.py | tee -a "${LOG_FILE}"
+for s in testbench/programs/*.s; do python3 tools/rvasm.py "$s" | tee -a "${LOG_FILE}"; done
+
+echo -e "\n>>> 10. Running RV32IM instruction test + trap/interrupt test (predictor on and off)..." | tee -a "${LOG_FILE}"
+for prog in isa_test trap_test; do
+  for bp in 1 0; do
+    iverilog -g2012 -Irtl -Ptb_programs.BP=${bp} "-Ptb_programs.PROG=\"testbench/programs/${prog}.hex\"" \
+      -o "${SCRIPT_DIR}/tb_programs.vvp" rtl/riscv_defines.vh rtl/*.v testbench/tb_programs.v
+    vvp -n "${SCRIPT_DIR}/tb_programs.vvp" | grep -E "RESULT|FAIL" | tee -a "${LOG_FILE}"
+  done
+done
+rm -f "${SCRIPT_DIR}/tb_programs.vvp"
+
+echo -e "\n>>> 11. Running Phase II unit tests (GPIO, load align, branch predictor, perf counter)..." | tee -a "${LOG_FILE}"
+for m in gpio_unit mem_align_unit branch_predictor_2bit perf_counter; do
+  iverilog -g2012 -Irtl -o "${SCRIPT_DIR}/tb_unit.vvp" rtl/${m}.v testbench/tb_${m}.v
+  vvp -n "${SCRIPT_DIR}/tb_unit.vvp" | grep -E "PASS|FAIL" | tee -a "${LOG_FILE}"
+done
+rm -f "${SCRIPT_DIR}/tb_unit.vvp"
+
+echo -e "\n>>> 12. Running benchmarks: pipeline (predictor on/off) and single-cycle baseline..." | tee -a "${LOG_FILE}"
+bash tools/run_benchmarks.sh | tee -a "${LOG_FILE}"
+
 # vvp exits 0 even when checks fail, so decide pass/fail from the logged results.
 echo -e "\n================================================================================" | tee -a "${LOG_FILE}"
 if grep -qE "^\[FAIL\]|Failed = [1-9]|[1-9][0-9]* Failed" "${LOG_FILE}"; then
