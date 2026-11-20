@@ -61,6 +61,15 @@ module tb_programs;
         if (dut.trap_ex)                  traps       = traps + 1;
     end
 
+    // Optional waveform: run with  +vcd=simulation/waveform_trap.vcd
+    reg [8*200-1:0] vcd_file;
+    initial begin
+        if ($value$plusargs("vcd=%s", vcd_file)) begin
+            $dumpfile(vcd_file);
+            $dumpvars(0, tb_programs);
+        end
+    end
+
     initial begin
         #22 rst_n = 1'b1;
         // Look 1 ns after each clock edge: at the edge itself the flip-flops

@@ -43,13 +43,22 @@ module reg_file #(
         end
     end
 
-    // Asynchronous read ports with write-through bypass for same-cycle WB/ID hazard
-    assign read_data1 = (read_addr1 == 5'd0) ? {`XLEN{1'b0}} :
-                        (BYPASS && reg_write && (read_addr1 == write_addr)) ? write_data :
-                        registers[read_addr1];
-
-    assign read_data2 = (read_addr2 == 5'd0) ? {`XLEN{1'b0}} :
-                        (BYPASS && reg_write && (read_addr2 == write_addr)) ? write_data :
-                        registers[read_addr2];
+    // Asynchronous read ports. With BYPASS, a register being written this cycle
+    // is read as the new value (same-cycle WB/ID hazard). A generate block, not
+    // a "BYPASS &&" condition, so that with BYPASS = 0 the bypass hardware is
+    // not built at all (otherwise tools report a false combinational loop).
+    generate
+        if (BYPASS) begin : g_bypass
+            assign read_data1 = (read_addr1 == 5'd0) ? {`XLEN{1'b0}} :
+                                (reg_write && (read_addr1 == write_addr)) ? write_data :
+                                registers[read_addr1];
+            assign read_data2 = (read_addr2 == 5'd0) ? {`XLEN{1'b0}} :
+                                (reg_write && (read_addr2 == write_addr)) ? write_data :
+                                registers[read_addr2];
+        end else begin : g_no_bypass
+            assign read_data1 = (read_addr1 == 5'd0) ? {`XLEN{1'b0}} : registers[read_addr1];
+            assign read_data2 = (read_addr2 == 5'd0) ? {`XLEN{1'b0}} : registers[read_addr2];
+        end
+    endgenerate
 
 endmodule
