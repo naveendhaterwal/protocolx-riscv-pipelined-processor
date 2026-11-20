@@ -21,9 +21,15 @@ module instruction_memory #(
     integer i;
 
     initial begin
+        // Simulation only: unused words read as NOP. Synthesis tools turn this
+        // loop into memory WRITE ports instead of initial contents, which made
+        // Yosys discard the program and optimise the whole CPU away (Phase II
+        // FPGA run). SYNTHESIS is defined automatically by Yosys.
+`ifndef SYNTHESIS
         for (i = 0; i < MEM_DEPTH; i = i + 1) begin
             memory[i] = `INSTR_NOP;
         end
+`endif
         if (INIT_FILE != "") begin
             $readmemh(INIT_FILE, memory);
         end
