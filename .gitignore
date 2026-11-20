@@ -26,3 +26,7 @@ synth/synth_report.log
 
 # Team members' face/voice reference clips: private, keep local only
 video/presenter_pick/
+
+# FPGA flow outputs that are large or regenerated (keep *.nextpnr.log and *.utilization.txt as evidence)
+fpga/results/*.json
+fpga/results/*.yosys.log
