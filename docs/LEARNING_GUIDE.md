@@ -330,6 +330,41 @@ What this means:
 - **With** the combinational divider, the divider is by far the longest path in both designs, so it would set the clock for everything. That is why the multi-cycle divider is the first item in section 9.
 - Measuring depth found a real problem: the timer's 64-bit compare was on the pipeline's longest path. Adding one flip-flop (interrupts arrive 1 cycle later, which software cannot notice) cut the depth from 27 to 21 levels.
 
+### 7.4 Real clock speed (place-and-route on an FPGA chip)
+Vivado doesn't run on macOS, so we used the open-source flow (Yosys → **nextpnr**) on a Lattice **ECP5-85F** FPGA (`bash fpga/run_fmax.sh`). That gives a real post-place-and-route Fmax with no board needed. A board-level top (`fpga/fpga_top.v`) runs `fpga/fpga_demo.s`, a program that uses every instruction, so the tools can't delete any hardware.
+
+| Configuration | Fmax (MHz) | Critical path through | LUT4 | Flip-flops | DSP (18x18) |
+|---|---|---|---|---|---|
+| Pipeline (5-stage), RV32IM | **5.5** | muldiv, execution_unit | 14,964 | 2,022 | 4 |
+| Single-cycle, RV32IM | **4.9** | muldiv, exec, dmem | 14,252 | 962 | 4 |
+| Pipeline (5-stage), M removed* | **62.4** | dmem | 6,865 | 2,022 | 0 |
+| Single-cycle, M removed* | **30.4** | dmem | 6,336 | 962 | 0 |
+
+\* M removed = multiply/divide unit replaced by a stub (fpga/muldiv_stub.v) to measure the rest of each core.
+
+Execution time, full RV32IM cores: time = cycles / Fmax
+
+| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
+|---|---|---|---|
+| fib | 32.4 µs | 30.8 µs | **1.05×** |
+| matmul | 1,748.6 µs | 1,711.9 µs | **1.02×** |
+| sort | 804.3 µs | 904.6 µs | **0.89×** |
+| sum | 132.4 µs | 133.9 µs | **0.99×** |
+
+Execution time, cores without the M unit (benchmarks that use MUL excluded): time = cycles / Fmax
+
+| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
+|---|---|---|---|
+| fib | 5.3 µs | 2.7 µs | **1.95×** |
+| sort | 130.5 µs | 79.0 µs | **1.65×** |
+| sum | 21.5 µs | 11.7 µs | **1.84×** |
+
+What it means:
+- **With the one-cycle divider, both cores crawl at ~5 MHz.** The whole critical path is inside `muldiv_unit`, so pipelining can't help. The divider is also more than half of the logic.
+- **Without it, pipelining doubles the clock: 62.4 vs 30.4 MHz.** Even with CPI 1.05–1.24, programs finish **1.65–1.95× sooner** than on the single-cycle core. That is the real payoff of pipelining.
+- **Our logic-depth estimate predicted 1.9×; the real measurement says 2.05×.** The estimate was good.
+- **Next bottleneck: the data-memory read in MEM.**
+
 ---
 
 ## 8. Problems we faced, and how we solved them
@@ -346,6 +381,8 @@ What this means:
 | 8 | Synthesis "logic depth" said the pipeline was deeper than single-cycle | Result contradicted theory, plus "Detected loop" warnings | Use a generic LUT netlist for depth; the Xilinx flip-flop cells weren't recognised, so the path went *through* registers | Sanity-check every surprising number |
 | 9 | Pipeline's longest path ran through the **timer compare** | Read the start/end of the `ltp` path | Register `timer_irq` (1-cycle delay): 27 → 21 levels | Measure first, then optimise the actual longest path |
 | 10 | The combinational divider is huge and slow | Synthesised `muldiv_unit` on its own | Documented; multi-cycle divider is future work | The simplest design is not always the best one for hardware |
+| 11 | FPGA run optimised the **whole CPU** away (21 cells, "no timing paths") | Synthesised the instruction memory alone: 0 cells, i.e. its output was constant | The NOP-fill `for` loop in `instruction_memory.v` turned into memory *write* ports, so the program was lost. Now inside `` `ifndef SYNTHESIS `` | Code that is harmless in simulation can mean something else to a synthesis tool |
+| 12 | "Logic loop" warnings for the single-cycle core | Read the loop: it went through the register-file bypass mux | With `BYPASS = 0` the loop was never real (constant select), but tools check before simplifying. Now a `generate` block, so the hardware isn't built | Prefer `generate` over "parameter && …" to remove hardware |
 
 ---
 
@@ -353,8 +390,8 @@ What this means:
 
 | Item | Why it matters | Suggested approach |
 |---|---|---|
-| Real FPGA run and Fmax (Vivado, Basys 3 / Artix-7) | Gives real MHz | Add a top-level with clock, reset button, LEDs = GPIO_OUT, switches = GPIO_IN; use Vivado |
-| Multi-cycle divider | The combinational divider is the slowest path | 32-cycle shift-subtract divider + stall signal |
+| Board demonstration (Basys 3 / Artix-7 with Vivado) | Shows it running on real hardware | `fpga/fpga_top.v` is ready (clock, reset button, switches, LEDs); needs a board and Vivado (Windows/Linux) |
+| Multi-cycle divider | The combinational divider limits the clock to ~5 MHz (62 MHz without it) | 32-cycle shift-subtract divider + stall signal |
 | Misaligned access exception | Spec-complete behaviour | Raise mcause 4/6 when address bits don't match the size |
 | JAL prediction | JAL always costs 2 cycles today | JAL target is known in IF: always redirect there |
 | Caches | Real memories are slow | Direct-mapped instruction cache (Project 6 in the course list) |
@@ -390,6 +427,16 @@ make synth
 ```
 Synthesis with Yosys; resource numbers go to `synth/utilization.txt`.
 
+```bash
+bash fpga/run_fmax.sh
+```
+Real place-and-route and maximum clock frequency (Lattice ECP5, no board needed). Needs the open-source FPGA tools ([OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build)); set `OSS=/path/to/oss-cad-suite` if it isn't in `~/tools/oss-cad-suite-20261112/`. Then summarise with:
+```bash
+python3 fpga/summarize.py
+```
+
+To record a waveform of any program run, add `+vcd=<file>` to the `vvp` command, then open it in GTKWave or any VCD viewer.
+
 ---
 
 ## 11. Viva questions with answers
@@ -423,6 +470,12 @@ A: Execution time = instructions × CPI × clock period. The single-cycle core h
 
 **Q: How do you know your tests actually test something?**
 A: Mutation testing: we deliberately broke BNE, the divide sign, SB byte-enables, MULHSU and the trap flush. Each time a test failed, naming the exact broken instruction.
+
+**Q: What is your processor's maximum clock frequency?**
+A: On a Lattice ECP5 FPGA (real place-and-route with nextpnr): 62.4 MHz for the pipeline without the M unit, versus 30.4 MHz for the single-cycle core. With our single-cycle divider, both drop to about 5 MHz, because the divider is the longest path.
+
+**Q: Why ECP5 and not Artix-7?**
+A: Vivado, needed for Xilinx chips, doesn't run on macOS, and we had no board. Yosys + nextpnr give real timing for ECP5 without a board. The absolute MHz would differ on Artix-7, but the comparison between our two cores is still valid.
 
 **Q: Why did you write your own assembler?**
 A: Our programs are small. A 280-line Python assembler is easy to read and change, while the GCC toolchain is a large install that outputs ELF files we'd still have to convert. We validated it against known encodings and the old hand-made hex files.

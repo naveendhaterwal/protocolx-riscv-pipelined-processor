@@ -195,7 +195,18 @@ gtkwave simulation/waveform.vcd
 | `bench_sort` (bubble sort) | 3973, CPI 1.000 | 6224, CPI 1.566 | 4930, CPI **1.240** |
 | `bench_matmul` (8×8 with MUL) | 8638, CPI 1.000 | 10302, CPI 1.192 | 9330, CPI **1.080** |
 
-The pipeline has a higher CPI than the single-cycle core but a much shorter clock: its longest logic path is **21 LUT levels vs 40** (multiply/divide unit excluded). Synthesis (Yosys, Xilinx 7-series): **7,201 LUTs, 2,022 flip-flops**; the combinational multiply/divide unit alone is 58 % of the LUTs. Full analysis: [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md#7-results).
+The pipeline has a higher CPI than the single-cycle core but a much shorter clock.
+
+### Real clock speed (Yosys + nextpnr place-and-route, Lattice ECP5-85F)
+
+| Configuration | Fmax | Benchmarks vs single-cycle |
+|---|---|---|
+| Pipeline, RV32IM | 5.45 MHz | 0.89–1.05× (both cores limited by the 1-cycle divider) |
+| Single-cycle, RV32IM | 4.94 MHz | — |
+| **Pipeline, M unit removed** | **62.4 MHz** | **1.65–1.95× faster** |
+| Single-cycle, M unit removed | 30.4 MHz | — |
+
+Run it yourself with `bash fpga/run_fmax.sh` (needs [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build); no board needed). Full write-up: [**Phase II report (PDF)**](docs/IEEE_Phase2_Project_Report.pdf) and [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md#7-results).
 
 A complete log of the last run is in [`simulation/simulation_results.log`](simulation/simulation_results.log).
 
@@ -232,12 +243,14 @@ A 5-minute video presentation covering the project introduction, member roles, a
 - [x] Memory-mapped GPIO (inputs and outputs) and hardware performance counters (`mcycle`, `minstret`).
 - [x] Single-cycle baseline core and 4 self-checking benchmarks for CPI comparison.
 - [x] Synthesis with Yosys + logic-depth analysis (longest path reduced from 27 to 21 LUT levels).
+- [x] Real post-place-and-route Fmax with nextpnr (Lattice ECP5): 62.4 MHz pipeline vs 30.4 MHz single-cycle.
+- [x] Phase II IEEE report ([PDF](docs/IEEE_Phase2_Project_Report.pdf)) and Phase II architecture diagram.
 - [x] Own assembler (`tools/rvasm.py`) and a generated 234-test instruction test.
 - [x] [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md): how everything works, problems faced, design choices and alternatives.
 
 ### Still open (future work):
-- [ ] FPGA prototype on a Xilinx Artix-7 / Basys 3 board with Vivado timing (real Fmax).
-- [ ] Multi-cycle divider (the combinational divider is the slowest and largest block).
+- [ ] Board demonstration on a Basys 3 / Artix-7 (needs a board and Vivado; `fpga/fpga_top.v` is ready).
+- [ ] Multi-cycle divider (the combinational divider limits the clock to ~5 MHz).
 - [ ] Misaligned-access exceptions, JAL prediction, caches.
 
 ---
