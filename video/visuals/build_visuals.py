@@ -23,6 +23,7 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT = os.path.join(ROOT, "video", "visuals", "out")
 sys.path.insert(0, os.path.join(ROOT, "testbench", "programs"))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 # ----------------------------------------------------------------------------
 # Theme
@@ -671,6 +672,98 @@ def scene_lower_thirds():
 
 
 # ----------------------------------------------------------------------------
+# Phase II: timer interrupt waveform (real VCD from trap_test)
+# ----------------------------------------------------------------------------
+def trace_svg(samples, spec, c0, c1, width=1740):
+    """Generic waveform. spec: list of (label, kind, fn) where kind is 'clk', 'bit'
+    or 'bus' and fn(sample) returns 0/1 (bit) or (text, highlight_colour|None) (bus)."""
+    lab_w, row_h, top = 250, 66, 46
+    n = c1 - c0
+    cw = (width - lab_w) / n
+    h = top + row_h * len(spec) + 10
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{h}" font-family="{MONO}">']
+    for k in range(n):
+        x = lab_w + k * cw
+        o.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h}" stroke="#1c2840"/>')
+        o.append(f'<text x="{x+cw/2:.1f}" y="{top-18}" fill="{MUTED}" font-size="15" text-anchor="middle">{c0+k}</text>')
+    o.append(f'<text x="0" y="{top-18}" fill="{MUTED}" font-size="15">cycle</text>')
+    for i, (label, kind, fn) in enumerate(spec):
+        y = top + i * row_h
+        mid, hi, lo = y + row_h / 2, y + 14, y + row_h - 14
+        o.append(f'<text x="0" y="{mid+6:.1f}" fill="{TEXT}" font-size="19" font-family="{SANS}" font-weight="600">{esc(label)}</text>')
+        for k in range(n):
+            x = lab_w + k * cw
+            s = samples[c0 + k]
+            if kind == "clk":
+                o.append(f'<polyline fill="none" stroke="{ACCENT}" stroke-width="2" points="{x:.1f},{lo} {x:.1f},{hi} {x+cw/2:.1f},{hi} {x+cw/2:.1f},{lo} {x+cw:.1f},{lo}"/>')
+            elif kind == "bit":
+                v, colr = fn(s)
+                yy = hi if v else lo
+                o.append(f'<line x1="{x:.1f}" y1="{yy}" x2="{x+cw:.1f}" y2="{yy}" stroke="{colr if v else DIM}" stroke-width="{3 if v else 2}"/>')
+                if v:
+                    o.append(f'<rect x="{x:.1f}" y="{hi}" width="{cw:.1f}" height="{lo-hi}" fill="{colr}" opacity=".18"/>')
+                if k and fn(samples[c0 + k - 1])[0] != v:
+                    o.append(f'<line x1="{x:.1f}" y1="{hi}" x2="{x:.1f}" y2="{lo}" stroke="{colr}" stroke-width="2"/>')
+            else:
+                txt, colr = fn(s)
+                pts = f"{x+4:.1f},{mid} {x+10:.1f},{hi} {x+cw-10:.1f},{hi} {x+cw-4:.1f},{mid} {x+cw-10:.1f},{lo} {x+10:.1f},{lo}"
+                o.append(f'<polygon points="{pts}" fill="{colr or "none"}" fill-opacity=".16" stroke="{colr or "#3b4a66"}" stroke-width="1.6"/>')
+                o.append(f'<text x="{x+cw/2:.1f}" y="{mid+5:.1f}" fill="{colr or TEXT}" font-size="14" text-anchor="middle">{esc(txt)}</text>')
+    o.append("</svg>")
+    return "".join(o)
+
+
+def scene_trap_waveform():
+    import rvasm
+    vcd = os.path.join(ROOT, "simulation", "waveform_trap_test.vcd")
+    if not os.path.exists(vcd):
+        raise SystemExit("run: vvp ... +vcd=simulation/waveform_trap_test.vcd (see LEARNING_GUIDE)")
+    _, labels = rvasm.assemble(open(os.path.join(ROOT, "testbench", "programs", "trap_test.s")).read())
+    by_addr = sorted((a, n) for n, a in labels.items())
+
+    def where(pc):           # nearest label at or before pc, e.g. "handler+8"
+        best = None
+        for a, n in by_addr:
+            if a <= pc:
+                best = (a, n)
+        return f"{best[1]}+{pc-best[0]}" if best and pc != best[0] else (best[1] if best else hex(pc))
+
+    T, D = "tb_programs", "tb_programs.dut."
+    sig = [T + ".clk", D + "pc_reg", D + "pc_ex", D + "valid_ex", D + "timer_irq", D + "trap_ex",
+           D + "mret_ex", D + "if_id_flush", D + "u_csr_unit.mcause", D + "u_csr_unit.mepc",
+           D + "u_csr_unit.mstatus_mie"]
+    ch = parse_vcd(vcd, sig)
+    rises = [t for t, v in ch[sig[0]] if v == "1" and t > 22000]
+    samples = [{k.split(".")[-1]: value_at(ch[k], t + 1000) for k in sig} for t in rises]
+    trap_c = next(i for i, s in enumerate(samples)
+                  if s["trap_ex"] == "1" and to_int(s["mcause"]) is not None and i > 100)
+    mret_c = next(i for i in range(trap_c, len(samples)) if samples[i]["mret_ex"] == "1")
+
+    spec = [("clk", "clk", None),
+            ("PC (fetch)", "bus", lambda s: (f"{to_int(s['pc_reg']):x}", None)),
+            ("instr in EX", "bus", lambda s: (where(to_int(s["pc_ex"])) if s["valid_ex"] == "1" else "bubble",
+                                               None if s["valid_ex"] == "1" else DIM)),
+            ("timer_irq", "bit", lambda s: (s["timer_irq"] == "1", WARN)),
+            ("MIE (int. on)", "bit", lambda s: (s["mstatus_mie"] == "1", OK)),
+            ("trap", "bit", lambda s: (s["trap_ex"] == "1", BAD)),
+            ("mret", "bit", lambda s: (s["mret_ex"] == "1", STAGE["MEM"])),
+            ("flush", "bit", lambda s: (s["if_id_flush"] == "1", WARN)),
+            ("mepc", "bus", lambda s: (f"{to_int(s['mepc']):x}", None))]
+    src = "Rendered from simulation/waveform_trap_test.vcd  •  Icarus Verilog  •  trap_test.s"
+    css = ".wave{margin-top:30px;background:#0d1628;border:1px solid " + BORDER + ";border-radius:14px;padding:24px 30px}"
+    entry = page(f"""<div class="frame"><div class="kicker">Real simulation waveform • Phase II</div>
+      <h2>Timer interrupt: trap taken in EX, PC jumps to the handler</h2>
+      <div class="wave">{trace_svg(samples, spec, trap_c - 5, trap_c + 7)}</div>
+      <div class="src">{esc(src)}</div>
+      <div class="tag">mepc = {to_int(samples[trap_c+1]['mepc']):#x} ({esc(where(to_int(samples[trap_c+1]['mepc'])))}) • mcause = {to_int(samples[trap_c+1]['mcause']):#010x}</div></div>""", css)
+    ret = page(f"""<div class="frame"><div class="kicker">Real simulation waveform • Phase II</div>
+      <h2>MRET: back to the interrupted instruction, interrupts on again</h2>
+      <div class="wave">{trace_svg(samples, spec, mret_c - 4, mret_c + 8)}</div>
+      <div class="src">{esc(src)}</div></div>""", css)
+    return {"phase2_01_timer_interrupt_entry": entry, "phase2_02_timer_interrupt_mret": ret}
+
+
+# ----------------------------------------------------------------------------
 # Rendering
 # ----------------------------------------------------------------------------
 def render(scenes, transparent=()):
@@ -686,7 +779,7 @@ def render(scenes, transparent=()):
         b.close()
 
 
-BUILDERS = [scene_waveforms, scene_architecture, scene_code, scene_slides, scene_lower_thirds]
+BUILDERS = [scene_waveforms, scene_architecture, scene_code, scene_slides, scene_lower_thirds, scene_trap_waveform]
 
 if __name__ == "__main__":
     flt = sys.argv[1] if len(sys.argv) > 1 else ""
