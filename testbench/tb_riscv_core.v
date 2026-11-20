@@ -39,6 +39,9 @@ module tb_riscv_core;
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
+        .gpio_in(32'd0),
+        .gpio_out(),
+        .ext_irq(1'b0),
         .current_pc(current_pc),
         .current_instr(current_instr),
         .wb_data_out(wb_data),
