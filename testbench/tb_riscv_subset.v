@@ -30,14 +30,10 @@ module tb_riscv_subset;
     riscv_core #(
         .IMEM_DEPTH(1024),
         .DMEM_DEPTH(1024),
-        .INIT_FILE("testbench/programs/prog_subset.hex"),
-        .BRANCH_PREDICTION(0)   // Phase I baseline: always "not taken" (cycle count below assumes it)
+        .INIT_FILE("testbench/programs/prog_subset.hex")
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
-        .gpio_in(32'd0),
-        .gpio_out(),
-        .ext_irq(1'b0),
         .current_pc(current_pc),
         .current_instr(current_instr),
         .wb_data_out(wb_data),

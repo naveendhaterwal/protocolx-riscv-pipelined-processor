@@ -1,6 +1,6 @@
 # bench_fib.s - 30th Fibonacci number, iteratively.   Expected 832040
 # Exercises: tight loop of dependent ALU instructions (forwarding every cycle).
-    li   x30, 0x800000F0
+    li   x30, 0xFFC               # TOHOST = last RAM word
     li   a0, 0                    # fib(0)
     li   a1, 1                    # fib(1)
     li   s1, 30

@@ -17,7 +17,6 @@ module pipe_mem_wb (
     // Control Signals Input
     input  wire                      reg_write_in,
     input  wire [1:0]                mem_to_reg_in,
-    input  wire                      valid_in,
 
     // Datapath Values Input
     input  wire [`XLEN-1:0]          pc_plus4_in,
@@ -28,7 +27,6 @@ module pipe_mem_wb (
     // Control Signals Output
     output reg                       reg_write_out,
     output reg  [1:0]                mem_to_reg_out,
-    output reg                       valid_out,
 
     // Datapath Values Output
     output reg  [`XLEN-1:0]          pc_plus4_out,
@@ -41,7 +39,6 @@ module pipe_mem_wb (
         if (!rst_n) begin
             reg_write_out  <= 1'b0;
             mem_to_reg_out <= 2'b00;
-            valid_out      <= 1'b0;
 
             pc_plus4_out   <= {`XLEN{1'b0}};
             read_data_out  <= {`XLEN{1'b0}};
@@ -50,7 +47,6 @@ module pipe_mem_wb (
         end else begin
             reg_write_out  <= reg_write_in;
             mem_to_reg_out <= mem_to_reg_in;
-            valid_out      <= valid_in;
 
             pc_plus4_out   <= pc_plus4_in;
             read_data_out  <= read_data_in;

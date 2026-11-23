@@ -1,6 +1,7 @@
 # ProtocolX — Phase I Verification & Test Report
 
-**Prepared by:** Aditya Raj (Technical Lead) & Naveen Kumar (RTL Developer)  
+**Prepared by:** Aditya Raj (Technical Lead) & Naveen Kumar (RTL Developer) *(Phase I attribution, kept as recorded)*  
+**Responsible (final allocation):** Aditya Raj, verification report and test evidence (see `docs/CONTRIBUTIONS.md`)  
 **Simulator Used:** Icarus Verilog v13.0 (stable) + VVP runtime on macOS  
 **Waveform Output:** Value Change Dump (`.vcd`) files viewable in GTKWave  
 
@@ -74,7 +75,7 @@ All tests written for Phase I have been simulated, checked with automated assert
 
 The complete, unabridged cycle-by-cycle trace of all test runs is saved in [`simulation/simulation_results.log`](../simulation/simulation_results.log). Anyone can reproduce this identical output by running:
 ```bash
-./simulation/run_sim.sh
+./scripts/run_sim.sh
 ```
 
 ---
@@ -83,4 +84,5 @@ The complete, unabridged cycle-by-cycle trace of all test runs is saved in [`sim
 
 - **Pipeline Design & Forwarding Unit Sign-off:** Aditya Raj (Technical Lead & Verification Lead)
 - **Top-Level Integration & Datapath Sign-off:** Naveen Kumar (Project Lead & RTL Developer)
+- **Final responsibility allocation** (see `docs/CONTRIBUTIONS.md`): core architecture, Naveen Kumar; pipeline registers and this report, Aditya Raj; instruction decode and memory, Archit Mamodiya; execution and hazard logic, Shagun Vishnoi.
 - **Status:** All 42 verification assertions passing; hazard detection, operand forwarding, and load-use interlocks verified bit-accurate.

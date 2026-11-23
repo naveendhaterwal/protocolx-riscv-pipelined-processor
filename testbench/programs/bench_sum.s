@@ -1,6 +1,6 @@
 # bench_sum.s - fill an array of 64 words (0, 3, 6, ...) and add them up.
 # Exercises: loads, stores, load-use stalls, a backward branch loop.   Expected sum = 6048
-    li   x30, 0x800000F0          # TOHOST
+    li   x30, 0xFFC               # TOHOST = last RAM word
     li   s0, 0x100                # array base address
     li   s1, 64                   # N
     mv   t0, s0

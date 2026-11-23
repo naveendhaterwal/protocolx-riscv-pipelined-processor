@@ -2,31 +2,52 @@
 
 [![Verilog HDL](https://img.shields.io/badge/Language-Verilog_HDL-blue.svg)](rtl/)
 [![Simulator](https://img.shields.io/badge/Simulator-Icarus_Verilog_13.0-green.svg)](https://steveicarus.github.io/iverilog/)
-[![Tests](https://img.shields.io/badge/Verification-42%2F42_PASS-brightgreen.svg)](docs/VERIFICATION_REPORT.md)
+[![Tests](https://img.shields.io/badge/Verification-51_checks_%2B_146_ISA_tests_PASS-brightgreen.svg)](docs/VERIFICATION_REPORT.md)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
-[![Phase](https://img.shields.io/badge/Phase_I-Completed-success.svg)](docs/IEEE_Phase1_Project_Report.md)
+[![Phase I](https://img.shields.io/badge/Phase_I-Completed-success.svg)](docs/IEEE_Phase1_Project_Report.md)
+[![Phase II](https://img.shields.io/badge/Phase_II-Completed-success.svg)](docs/IEEE_Phase2_Project_Report.pdf)
 
-Welcome to the **ProtocolX** repository! This is our college engineering project for designing, implementing, and verifying a 32-bit **5-Stage Pipelined RISC-V (RV32I) Processor** using Verilog HDL.
+Welcome to the **ProtocolX** repository! This is our college engineering project (Modern Computer Architecture, *Project 3*) for designing, implementing, verifying and measuring a 32-bit **5-Stage Pipelined RISC-V (RV32I) Processor** in Verilog HDL, and comparing it against a **single-cycle baseline**.
+
+> **New here?** Read [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md): it explains every part of the design in simple language, the problems we faced and the alternatives we considered.
+
+---
+
+## 🔎 Where to look (for a code review)
+
+| You want to see… | Open |
+|---|---|
+| The processor (all Verilog) | [`rtl/`](rtl/): start with [`riscv_core.v`](rtl/riscv_core.v) (top level) |
+| How hazards are handled | [`rtl/hazard_unit.v`](rtl/hazard_unit.v) (forwarding, load-use stall, flush) |
+| The single-cycle baseline | [`rtl/single_cycle_core.v`](rtl/single_cycle_core.v) |
+| The tests | [`testbench/`](testbench/) (Verilog testbenches) and [`testbench/programs/`](testbench/programs/) (assembly programs) |
+| Every helper script | [`scripts/`](scripts/) (assembler, test generator, run scripts, FPGA flow) |
+| Architecture diagram | [`docs/diagrams/protocolx_pipeline_architecture.svg`](docs/diagrams/protocolx_pipeline_architecture.svg) |
+| Reports | [`docs/`](docs/): Phase I and Phase II IEEE reports |
 
 ---
 
 ## 👥 The ProtocolX Team
 
-| Roll Number | Name | Primary Role & Contributions |
-|:---:|:---|:---|
-| **2401020041** | **Naveen Kumar** | **Project Lead & Primary RTL Developer**<br>Core processor architecture, ALU, Register File, Immediate Generator, and top-level datapath integration. |
-| **2401010032** | **Aditya Raj** | **Technical Lead, Pipeline Design & Verification**<br>Hazard detection unit, RAW data forwarding logic, testbench development, and simulation verification. |
-| **2401010095** | **Archit Mamodiya** | **Literature Review & Research**<br>RISC-V specification analysis, comparative study of open-source academic cores, and literature review. |
-| **2401020060** | **Shagun Vishnoi** | **IEEE Report & Documentation**<br>Authoring and formatting the IEEE Phase I report, compiling authentic academic citations, and documentation. |
-| **2401010388** | **Ritik Ranjan** | **Architecture Diagrams, GitHub Docs & Video Preparation**<br>Creating SVG block diagrams, diagram guide, video presentation script, and video link coordination. |
+Final responsibility allocation. Each member answers for these parts of the project (review, explanation, questions). Details, the stage-by-stage view and the historical Phase I record are in [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
+
+| Roll Number | Name | Area | Responsible for |
+|:---:|:---|:---|:---|
+| **2401020041** | **Naveen Kumar** | **Core architecture** | `riscv_core.v`, `riscv_defines.vh`, `pipe_if_id.v`, `instruction_memory.v` |
+| **2401010032** | **Aditya Raj** | **Pipeline registers and verification** | `pipe_id_ex.v`, `pipe_ex_mem.v`, `pipe_mem_wb.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
+| **2401010095** | **Archit Mamodiya** | **Instruction decode and memory** | `control_unit.v`, `reg_file.v`, `imm_gen.v`, `data_memory.v`, `tb_riscv_mem.v` |
+| **2401020060** | **Shagun Vishnoi** | **Execution and hazards** | `alu.v`, `execution_unit.v`, `hazard_unit.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
+| **2401010388** | **Ritik Ranjan** | **Reports, presentation and documentation** | IEEE Phase I and Phase II reports, the presentation, architecture diagrams (`docs/diagrams/`), `README.md` and repository documentation, demonstration video material |
+
+Each member supplies and checks the technical content for their own area, so that the reports and the presentation describe the design accurately.
 
 ---
 
-## 🎯 Project Objective (Phase I)
+## 🎯 Project Objective
 
-The goal of Phase I was to build a working, hardware-accurate 5-stage pipelined processor implementing the base integer RISC-V instruction set (RV32I). 
+Build a working, hardware-accurate 5-stage pipelined processor for the RISC-V base integer instruction set (RV32I), verify it, and **measure** how much the pipeline helps compared with a single-cycle design (CPI, IPC, clock speed, execution time).
 
-Instead of waiting for one instruction to complete all its operations before starting the next one (single-cycle), our processor overlaps execution across 5 stages like an assembly line:
+Instead of waiting for one instruction to finish all its steps before starting the next (single-cycle), the processor overlaps execution across 5 stages like an assembly line:
 
 ```
 Clock Cycle:   1     2     3     4     5     6     7
@@ -42,29 +63,31 @@ Instruction 5:                         [IF]  [ID]  [EX]  [MEM] [WB]
 ## 🏗️ Processor Architecture & Live Pipeline Execution
 
 <p align="center">
-  <img src="diagrams/pipeline_animation.gif" alt="ProtocolX 5-Stage Pipeline Live Animation" width="100%" />
+  <img src="docs/diagrams/pipeline_animation.gif" alt="ProtocolX 5-Stage Pipeline Live Animation" width="100%" />
 </p>
 
-*Above: Live execution showing instructions overlapping across the 5 stages (`IF` $\rightarrow$ `ID` $\rightarrow$ `EX` $\rightarrow$ `MEM` $\rightarrow$ `WB`) with real-time data forwarding. For the static vector schematic, see [diagrams/protocolx_pipeline_architecture.svg](diagrams/protocolx_pipeline_architecture.svg) and the walkthrough in [diagrams/diagram_description.md](diagrams/diagram_description.md).*
+*Above: instructions overlapping across the 5 stages (`IF` → `ID` → `EX` → `MEM` → `WB`) with real-time data forwarding (a concept animation). The static vector schematic is [docs/diagrams/protocolx_pipeline_architecture.svg](docs/diagrams/protocolx_pipeline_architecture.svg); the walkthrough is in [docs/diagrams/diagram_description.md](docs/diagrams/diagram_description.md).*
 
 ### The 5 Pipeline Stages
 1. **Instruction Fetch (IF):** Reads the 32-bit instruction from memory using the Program Counter (PC) and increments `PC = PC + 4`.
 2. **Instruction Decode (ID):** Decodes the opcode and function fields, reads registers from the 32-entry Register File (`x0` is hardwired to 0), and sign-extends immediate values.
-3. **Execute (EX):** The 32-bit ALU performs arithmetic, bitwise, shift, or comparison calculations. Branch addresses are computed here.
-4. **Memory Access (MEM):** Reads from or writes to the 4KB Data Memory for `LW` and `SW` instructions.
-5. **Write-Back (WB):** Selects between the ALU result, memory data, or `PC + 4` and writes back into the destination register (`rd`).
+3. **Execute (EX):** The 32-bit ALU performs arithmetic, bitwise, shift, or comparison calculations. Branch conditions and target addresses are computed here.
+4. **Memory Access (MEM):** Reads from or writes to the 4 KB Data Memory for `LW` and `SW`.
+5. **Write-Back (WB):** Selects between the ALU result, memory data, or `PC + 4` and writes it into the destination register (`rd`).
 
 ### The 4 Pipeline Registers
-Between each stage sits a synchronous pipeline register that latches data and control signals on every clock tick:
-- `pipe_if_id`: Holds instruction and PC. Can be stalled or flushed.
-- `pipe_id_ex`: Holds register data, immediate, PC, and control signals. Can be flushed.
-- `pipe_ex_mem`: Holds computed ALU result, store data, and memory control lines.
-- `pipe_mem_wb`: Holds memory read data, ALU result, and writeback destination.
+- `pipe_if_id`: instruction and PC. Can be stalled or flushed.
+- `pipe_id_ex`: register data, immediate, PC and control signals. Can be flushed.
+- `pipe_ex_mem`: ALU result, store data and memory control lines.
+- `pipe_mem_wb`: memory read data, ALU result and write-back destination.
 
 ### 🛡️ How We Handle Hazards
-- **RAW Data Hazards:** Resolved by the **Data Forwarding Unit**. If an instruction in EX needs a register calculated by an earlier instruction currently in MEM or WB, data is forwarded directly into the ALU input multiplexers without stalling.
-- **Load-Use Data Hazard:** When an instruction immediately depends on data being loaded by `LW`, the data cannot be forwarded in time. Our **Hazard Unit** detects this, pauses the PC and IF/ID registers, and inserts a 1-cycle bubble (NOP).
-- **Control Hazards:** When a conditional branch (`BEQ`, `BNE`, etc.) evaluates to true, instructions speculatively fetched along the wrong path are flushed (converted to NOPs).
+- **RAW data hazards:** the **forwarding unit** passes a result from EX/MEM or MEM/WB straight into the ALU input multiplexers, with no stall.
+- **Load-use hazard:** data from `LW` arrives too late to forward, so the **hazard unit** holds the PC and IF/ID and inserts a 1-cycle bubble.
+- **Control hazards:** branches and jumps are resolved in EX, so the two instructions fetched after a taken branch are flushed (2 cycles lost).
+
+### The single-cycle baseline
+[`rtl/single_cycle_core.v`](rtl/single_cycle_core.v) is built from the *same* modules but without pipeline registers: every instruction finishes in one (long) cycle, so CPI = 1. The pipeline needs more cycles but each one is much shorter. Comparing the two is how we show that pipelining actually pays off.
 
 ---
 
@@ -72,141 +95,112 @@ Between each stage sits a synchronous pipeline register that latches data and co
 
 ```
 protocolx-riscv-pipelined-processor/
-├── rtl/                               # Verilog Source Files
-│   ├── riscv_defines.vh               # Constants, opcodes, ALU operation codes
-│   ├── riscv_core.v                   # Top-level 5-stage pipelined processor core
-│   ├── alu.v                          # 32-bit Arithmetic Logic Unit
-│   ├── reg_file.v                     # 32x32-bit Register File (x0=0, bypass)
-│   ├── imm_gen.v                      # Sign-extending Immediate Generator
-│   ├── control_unit.v                 # Instruction decoder & ALU control
-│   ├── hazard_unit.v                  # Data forwarding & load-use stall logic
-│   ├── execution_unit.v               # EX stage with forwarding muxes & ALU
-│   ├── instruction_memory.v           # 4KB instruction ROM/RAM model
-│   ├── data_memory.v                  # 4KB data RAM model
-│   ├── pipe_if_id.v                   # IF/ID pipeline register
-│   ├── pipe_id_ex.v                   # ID/EX pipeline register
-│   ├── pipe_ex_mem.v                  # EX/MEM pipeline register
-│   └── pipe_mem_wb.v                  # MEM/WB pipeline register
+├── rtl/                          # Verilog design (this is the processor)
+│   ├── riscv_defines.vh          #   constants: opcodes, ALU operation codes
+│   ├── riscv_core.v              #   TOP LEVEL: 5-stage pipelined core
+│   ├── single_cycle_core.v       #   single-cycle baseline core
+│   ├── alu.v  reg_file.v  imm_gen.v  control_unit.v
+│   ├── hazard_unit.v             #   forwarding, load-use stall, flush
+│   ├── execution_unit.v          #   EX stage: forwarding muxes, ALU, branch check
+│   ├── instruction_memory.v  data_memory.v
+│   └── pipe_if_id.v  pipe_id_ex.v  pipe_ex_mem.v  pipe_mem_wb.v
 │
-├── testbench/                         # Testbenches & Test Programs
-│   ├── tb_riscv_core.v                # Full pipeline integration testbench
-│   ├── tb_riscv_hazard.v              # RAW hazard forwarding testbench
-│   ├── tb_riscv_mem.v                 # Load/Store & load-use stall testbench
-│   ├── tb_riscv_branch.v              # Branch taken & flush testbench
-│   ├── tb_alu.v                       # ALU unit testbench
-│   ├── tb_reg_file.v                  # Register file unit testbench
-│   ├── tb_hazard_unit.v               # Hazard unit testbench
-│   └── programs/                      # Hex machine code test suites
-│       ├── prog_arithmetic.hex        # Basic arithmetic instructions
-│       ├── prog_hazard.hex            # RAW data hazard test program
-│       ├── prog_load_store.hex        # Memory & load-use stall program
-│       └── prog_branch.hex            # Branch condition test program
+├── testbench/                    # Verilog testbenches and test programs
+│   ├── tb_alu.v  tb_reg_file.v  tb_hazard_unit.v           # unit tests
+│   ├── tb_riscv_core.v  tb_riscv_hazard.v  tb_riscv_mem.v  # pipeline tests
+│   ├── tb_riscv_branch.v  tb_riscv_subset.v
+│   ├── tb_programs.v             #   runs any program on the pipeline (cycles, stalls, flushes)
+│   ├── tb_single_cycle.v         #   runs any program on the single-cycle baseline
+│   └── programs/                 #   assembly (.s) and machine code (.hex)
+│       ├── prog_*.hex            #     Phase I test programs
+│       ├── isa_test.s            #     146 generated, self-checking RV32I tests
+│       └── bench_*.s             #     4 benchmarks: fib, sum, sort, matmul
 │
-├── diagrams/                          # Architectural Diagrams
-│   ├── pipeline_animation.gif         # Live animated GIF of 5-stage pipeline
-│   ├── protocolx_pipeline_architecture.svg # Vector block diagram
-│   ├── simulation_waveform_diagram.svg     # Timing and cycle waveform diagram
-│   └── diagram_description.md         # Detailed diagram walkthrough
+├── scripts/                      # ALL helper scripts live here
+│   ├── run_sim.sh                #   run the complete verification suite
+│   ├── run_benchmarks.sh         #   benchmarks: CPI, IPC, cycle-model check
+│   ├── rvasm.py                  #   our RV32I assembler (.s -> .hex)
+│   ├── gen_isa_test.py           #   generates testbench/programs/isa_test.s
+│   ├── gen_prog_subset.py        #   generates prog_subset.hex
+│   ├── run_fmax.sh  summarize_fmax.py   # real Fmax with Yosys + nextpnr
+│   └── make_benchmark_chart.py  build_report_pdf.py  gen_pipeline_gif.py
 │
-├── docs/                              # Project Documentation & Reports
-│   ├── IEEE_Phase1_Project_Report.pdf  # Compiled IEEE Two-Column Conference PDF
-│   ├── IEEE_Phase1_Project_Report.html # IEEE Conference Format HTML source
-│   ├── IEEE_Phase1_Project_Report.md  # Official IEEE Phase I Report (Markdown)
-│   ├── IEEE_Phase1_Project_Report.tex # IEEE Report LaTeX source file
-│   ├── CONTRIBUTIONS.md               # Detailed individual team contributions
-│   └── VERIFICATION_REPORT.md         # Test coverage & simulation audit
-│
-├── simulation/                        # Simulation Scripts & Real Logs
-│   ├── run_sim.sh                     # Automated bash simulation runner
-│   ├── simulation_results.log         # Real unabridged simulation log
-│   ├── waveform.vcd                   # Core arithmetic VCD waveform
-│   ├── waveform_hazard.vcd            # Forwarding test waveform
-│   ├── waveform_mem.vcd               # Memory & stall waveform
-│   └── waveform_branch.vcd            # Branch flush waveform
-│
-├── video/                             # Video Presentation Deliverables
-│   ├── VIDEO_DEMO_SCRIPT.md           # 5-minute prototype presentation script
-│   └── VIDEO_LINK.md                  # Video demonstration link placeholder
-│
-├── Makefile                           # Quick command runner
-├── LICENSE                            # MIT License
-└── README.md                          # Main project guide
+├── fpga/                         # FPGA flow: board-level top, demo program, results
+├── synth/                        # Yosys synthesis helper and area report
+├── simulation/                   # simulation log and VCD waveforms (real outputs)
+├── docs/                         # reports, learning guide, diagrams/, figures/
+├── Makefile                      # quick commands (make test, make bench, ...)
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## ⚡ Quickstart: Running Simulations
-
-> New here? Start with [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md).
+## ⚡ Quickstart
 
 ### Prerequisites
-You need **Icarus Verilog** (`iverilog`) and **GTKWave** (optional, for viewing waveforms).
-- On macOS (Homebrew):
-  ```bash
-  brew install icarus-verilog gtkwave
-  ```
-- On Ubuntu/Debian Linux:
-  ```bash
-  sudo apt-get install iverilog gtkwave
-  ```
+**Icarus Verilog** (`iverilog`) and Python 3. Optional: **GTKWave** (waveforms), **Yosys** (`make synth`).
+- macOS: `brew install icarus-verilog gtkwave yosys`
+- Ubuntu/Debian: `sudo apt-get install iverilog gtkwave yosys`
 
-### Run All Verification Tests
-To compile and run every unit test and full pipeline testbench in one go:
-```bash
-./simulation/run_sim.sh
-```
-Or simply:
-```bash
-make test
-```
+### Commands
+| Command | What it does |
+|---|---|
+| `make test` | the complete verification suite (ends with *ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY*, or exits with an error) |
+| `make bench` | the 4 benchmarks on both designs: CPI, IPC and the cycle-model check |
+| `make test_programs` | the 146-test RV32I instruction program on both designs |
+| `make test_core` / `test_hazard` / `test_mem` / `test_branch` / `test_alu` | single testbenches |
+| `make synth` | Yosys synthesis (area) |
+| `make fpga` | real maximum clock frequency (needs [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build); no board needed) |
 
-### Run Specific Testbenches
-- **Top-level Pipeline Test:** `make test_core`
-- **Data Forwarding Test:** `make test_hazard`
-- **Memory & Stall Test:** `make test_mem`
-- **Branch Flush Test:** `make test_branch`
-- **ALU Unit Test:** `make test_alu`
-
-### Viewing Waveforms
-Open any of the generated `.vcd` files in GTKWave:
-```bash
-gtkwave simulation/waveform.vcd
-```
+Open any waveform with `gtkwave simulation/waveform.vcd`.
+To write your own program: `python3 scripts/rvasm.py myprog.s` produces `myprog.hex`.
 
 ---
 
-## 📊 Verification Results
+## 📊 Results
 
-`make test` runs everything below and ends with **ALL VERIFICATION SUITES COMPLETED SUCCESSFULLY** (or exits with an error if any check fails).
+### Verification (`make test`, all passing)
 
-| Suite | Checks | Result |
-|---|---|---|
-| Phase I unit + pipeline testbenches (ALU, register file, hazard unit, arithmetic, forwarding, load-use, branch flush, instruction subset) | 51 | ✅ all pass |
-| `isa_test` — **234 generated tests** covering every RV32IM instruction + CSRs (predictor on and off) | 234 × 2 | ✅ pass |
-| `trap_test` — ECALL, EBREAK, illegal instruction, timer + external interrupts, GPIO, precise traps (predictor on and off) | 9 groups × 2 | ✅ pass |
-| Benchmarks on 3 designs (self-checking) | 4 × 3 | ✅ pass |
+| Suite | Checks |
+|---|---|
+| Unit and pipeline testbenches (ALU, register file, hazard unit, arithmetic, forwarding, load-use stall, branch flush, 7-instruction subset) | **51** |
+| `isa_test`: generated, self-checking program covering every RV32I instruction, on the pipeline **and** the single-cycle core | **146 tests × 2 designs** |
+| Benchmarks: each program checks its own answer, on both designs | **4 × 2** |
+| Cycle-model check: `cycles = N + 4 + stalls + 2·flushes` matches the measurement on every benchmark | **4 / 4 exact** |
 
-### Benchmarks (cycles measured by the hardware counters)
+We also did **mutation testing** (deliberately breaking the hardware: inverted BNE, SRA behaving like SRL, forwarding disabled); every break was caught by the suite, naming the broken instruction.
 
-| Benchmark | Single-cycle baseline | Pipeline, no predictor | Pipeline + 2-bit predictor |
+### Benchmarks: pipeline vs single-cycle
+
+| Benchmark | Instructions (N) | Pipeline cycles | CPI | IPC | Load-use stalls | Flushes |
+|---|---|---|---|---|---|---|
+| `fib`: Fibonacci(30) | 160 | 222 | 1.387 | 0.721 | 0 | 29 |
+| `sum`: sum of a 64-element array | 654 | 974 | 1.489 | 0.671 | 64 | 126 |
+| `sort`: bubble sort, 32 values | 3,973 | 6,224 | 1.567 | 0.638 | 527 | 860 |
+| `matmul`: 8×8 matrices, shift-and-add multiply | 21,742 | 29,326 | 1.349 | 0.741 | 0 | 3,790 |
+
+The single-cycle core runs each program in exactly N cycles (CPI 1.000). The extra pipeline cycles are fully explained by the pipeline fill (4), load-use stalls (1 each) and flushes (2 each):
+
+![Where the pipeline's cycles go](docs/figures/benchmark_cpi.png)
+
+### Real clock speed: Yosys + nextpnr place-and-route, Lattice ECP5-85F
+
+| Design | Fmax | LUT4 | Flip-flops | Critical path |
+|---|---|---|---|---|
+| **5-stage pipeline** | **67.8 MHz** | 5,100 | 1,541 | data-memory read (MEM stage) |
+| Single-cycle baseline | 38.8 MHz | 5,161 | 722 | data-memory read after the ALU |
+
+The pipeline's clock is **1.75× faster**. Combined with its higher CPI, programs finish **1.12× to 1.30× sooner** (execution time = cycles / Fmax):
+
+| Benchmark | Single-cycle | Pipeline | Speed-up |
 |---|---|---|---|
-| `bench_fib` (Fibonacci 30) | 160 cycles, CPI 1.000 | 222, CPI 1.387 | 168, CPI **1.050** |
-| `bench_sum` (array sum) | 654, CPI 1.000 | 974, CPI 1.489 | 730, CPI **1.116** |
-| `bench_sort` (bubble sort) | 3973, CPI 1.000 | 6224, CPI 1.566 | 4930, CPI **1.240** |
-| `bench_matmul` (8×8 with MUL) | 8638, CPI 1.000 | 10302, CPI 1.192 | 9330, CPI **1.080** |
+| fib | 4.1 µs | 3.3 µs | **1.26×** |
+| sum | 16.9 µs | 14.4 µs | **1.17×** |
+| sort | 102.4 µs | 91.9 µs | **1.12×** |
+| matmul | 560.5 µs | 432.8 µs | **1.30×** |
 
-The pipeline has a higher CPI than the single-cycle core but a much shorter clock.
-
-### Real clock speed (Yosys + nextpnr place-and-route, Lattice ECP5-85F)
-
-| Configuration | Fmax | Benchmarks vs single-cycle |
-|---|---|---|
-| Pipeline, RV32IM | 5.45 MHz | 0.89–1.05× (both cores limited by the 1-cycle divider) |
-| Single-cycle, RV32IM | 4.94 MHz | — |
-| **Pipeline, M unit removed** | **62.4 MHz** | **1.65–1.95× faster** |
-| Single-cycle, M unit removed | 30.4 MHz | — |
-
-Run it yourself with `bash fpga/run_fmax.sh` (needs [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build); no board needed). Full write-up: [**Phase II report (PDF)**](docs/IEEE_Phase2_Project_Report.pdf) and [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md#7-results).
+These are ECP5 results (Vivado, needed for a Xilinx Artix-7, does not run on macOS, and no board was available). Absolute MHz would differ on another chip; the comparison between our two designs is what matters. Details: [Phase II report (PDF)](docs/IEEE_Phase2_Project_Report.pdf).
 
 A complete log of the last run is in [`simulation/simulation_results.log`](simulation/simulation_results.log).
 
@@ -214,44 +208,32 @@ A complete log of the last run is in [`simulation/simulation_results.log`](simul
 
 ## 📹 Video Demonstration
 
-A 5-minute video presentation covering the project introduction, member roles, architecture walkthrough, Verilog code review, and live simulation is documented in [`video/VIDEO_DEMO_SCRIPT.md`](video/VIDEO_DEMO_SCRIPT.md).
-
-- **Demonstration Video Link (Google Drive):**  
-  👉 **[ProtocolX Phase I Prototype Video (Google Drive)](https://drive.google.com/drive/folders/11hZyntXJBju4w4UMHXSxqYusGwjAtXKI?usp=sharing)**  
-  *(Also recorded in [`video/VIDEO_LINK.md`](video/VIDEO_LINK.md) and [`video/README.md`](video/README.md))*
+- **Demonstration Video Link (Google Drive):**
+  👉 **[ProtocolX Phase I Prototype Video (Google Drive)](https://drive.google.com/drive/folders/11hZyntXJBju4w4UMHXSxqYusGwjAtXKI?usp=sharing)**
 
 ---
 
 ## 🗺️ Project Status & Roadmap
 
-### Completed in Phase I:
-- [x] Full 5-stage pipelined datapath (IF, ID, EX, MEM, WB).
-- [x] 4 Pipeline registers with stall and flush controls.
-- [x] RV32I basic instructions (Arithmetic, Logic, Shifts, Comparisons, LW, SW, BEQ, BNE, JAL).
-- [x] Hardware forwarding unit for RAW data hazards.
-- [x] Hardware load-use stall unit (1-cycle bubble injection).
-- [x] Control hazard pipeline flushes on taken branches.
-- [x] Real simulation runs, testbenches, and waveforms.
-- [x] IEEE Phase I Project Report and architecture diagrams.
+### Completed in Phase I
+- [x] Full 5-stage pipelined datapath (IF, ID, EX, MEM, WB) with 4 pipeline registers (stall and flush support).
+- [x] RV32I instructions: arithmetic, logic, shifts, comparisons, `LW`, `SW`, all six branches, `JAL`, `JALR`, `LUI`, `AUIPC`.
+- [x] Forwarding unit (RAW hazards), load-use stall, control-hazard flush.
+- [x] Real simulation runs, testbenches, waveforms, IEEE Phase I report and architecture diagrams.
 
-### Completed in Phase II:
-- [x] Dynamic branch prediction: 2-bit saturating counters, target decoded in IF (no BTB needed).
-- [x] RV32M multiply / divide / remainder (all 8 instructions, spec-defined edge cases).
-- [x] Byte and half-word loads/stores (LB, LH, LBU, LHU, SB, SH) with byte enables.
-- [x] CSRs (Zicsr), ECALL / EBREAK / MRET, illegal-instruction trap, precise traps.
-- [x] Machine timer and external interrupts.
-- [x] Memory-mapped GPIO (inputs and outputs) and hardware performance counters (`mcycle`, `minstret`).
-- [x] Single-cycle baseline core and 4 self-checking benchmarks for CPI comparison.
-- [x] Synthesis with Yosys + logic-depth analysis (longest path reduced from 27 to 21 LUT levels).
-- [x] Real post-place-and-route Fmax with nextpnr (Lattice ECP5): 62.4 MHz pipeline vs 30.4 MHz single-cycle.
-- [x] Phase II IEEE report ([PDF](docs/IEEE_Phase2_Project_Report.pdf)) and Phase II architecture diagram.
-- [x] Own assembler (`tools/rvasm.py`) and a generated 234-test instruction test.
-- [x] [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md): how everything works, problems faced, design choices and alternatives.
+### Completed in Phase II
+- [x] Single-cycle baseline core, built from the same modules, for comparison.
+- [x] Benchmarks (4 programs) with measured CPI and IPC, and an exact cycle model (`N + 4 + stalls + 2·flushes`).
+- [x] Our own RV32I assembler and a generated 146-test self-checking instruction program.
+- [x] Test-suite hardening: mutation testing; the run script now fails when a check fails.
+- [x] Synthesis fixes found by running real tools (reset/flush coding bug, ROM contents, RAM reset loop).
+- [x] Real post-place-and-route Fmax (Yosys + nextpnr, Lattice ECP5): pipeline 67.8 MHz vs single-cycle 38.8 MHz.
+- [x] [Phase II IEEE report](docs/IEEE_Phase2_Project_Report.pdf) and [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md).
 
-### Still open (future work):
+### Not done / ideas for later
 - [ ] Board demonstration on a Basys 3 / Artix-7 (needs a board and Vivado; `fpga/fpga_top.v` is ready).
-- [ ] Multi-cycle divider (the combinational divider limits the clock to ~5 MHz).
-- [ ] Misaligned-access exceptions, JAL prediction, caches.
+- [ ] Branch prediction (its own course project) to cut the 2-cycle cost of a taken branch.
+- [ ] Faster memory path (the data-memory read is the critical path), caches.
 
 ---
 
