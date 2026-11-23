@@ -1,59 +1,55 @@
 #!/usr/bin/env python3
 """
-Runs tools/run_benchmarks.sh (real simulations) and draws docs/figures/benchmark_cpi.png
-plus docs/figures/benchmark_results.csv (cycles, CPI and IPC for every design).
-Run from the repo root:  python3 docs/figures/make_benchmark_chart.py
+Runs scripts/run_benchmarks.sh (real simulations) and draws docs/figures/benchmark_cpi.png:
+for every benchmark, the pipeline's CPI split into where the cycles go:
+    1.00        useful work (one cycle per instruction, the single-cycle CPI)
+  + fill        4 cycles to fill the pipeline at the start
+  + load-use    1 stall cycle per load-use hazard
+  + flushes     2 wasted cycles per taken branch / jump
+CPI = (N + 4 + stalls + 2 * flushes) / N.
+Run from anywhere:  python3 scripts/make_benchmark_chart.py
 """
 import csv
 import os
-import re
 import subprocess
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-out = subprocess.run(["bash", "tools/run_benchmarks.sh"], cwd=ROOT, check=True,
-                     capture_output=True, text=True).stdout
-rows = []
-for line in out.splitlines():
-    m = re.match(r"(bench_\w+)\s*\|\s*(\d+) cyc, CPI ([\d.]+)\s*\|\s*(\d+) cyc, CPI ([\d.]+)\s*\|\s*(\d+) cyc, CPI ([\d.]+)", line)
-    if m:
-        name = m.group(1).replace("bench_", "")
-        rows.append((name, int(m.group(2)), float(m.group(3)), int(m.group(4)), float(m.group(5)),
-                     int(m.group(6)), float(m.group(7))))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+subprocess.run(["bash", "scripts/run_benchmarks.sh"], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
+rows = list(csv.DictReader(open(os.path.join(ROOT, "docs", "figures", "benchmark_results.csv"))))
 if not rows:
-    raise SystemExit("no benchmark results parsed:\n" + out)
+    raise SystemExit("no benchmark results")
 
-here = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(here, "benchmark_results.csv"), "w", newline="") as f:
-    w = csv.writer(f)
-    w.writerow(["benchmark", "design", "cycles", "CPI", "IPC"])
-    for name, c0, p0, c1, p1, c2, p2 in rows:
-        for design, c, p in (("single-cycle", c0, p0), ("pipeline, no predictor", c1, p1),
-                             ("pipeline + 2-bit predictor", c2, p2)):
-            w.writerow([name, design, c, f"{p:.3f}", f"{1 / p:.3f}"])
+names = [r["benchmark"] for r in rows]
+N = [int(r["instructions"]) for r in rows]
+fill = [4 / n for n in N]
+stall = [int(r["stalls"]) / n for r, n in zip(rows, N)]
+flush = [2 * int(r["flushes"]) / n for r, n in zip(rows, N)]
+cpi = [float(r["cpi"]) for r in rows]
 
-names = [r[0] for r in rows]
+fig, ax = plt.subplots(figsize=(9, 4.4), dpi=160)
 x = range(len(rows))
-bw = 0.26
-fig, ax = plt.subplots(figsize=(9, 4.2), dpi=160)
-series = [("Single-cycle (baseline)", [r[2] for r in rows], "#94a3b8"),
-          ("Pipeline, no predictor", [r[4] for r in rows], "#f59e0b"),
-          ("Pipeline + 2-bit predictor", [r[6] for r in rows], "#0284c7")]
-for i, (label, vals, col) in enumerate(series):
-    bars = ax.bar([xi + (i - 1) * bw for xi in x], vals, bw, label=label, color=col)
-    for b, v in zip(bars, vals):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.02, f"{v:.2f}", ha="center", va="bottom", fontsize=8)
+parts = [("Useful work (1.00 = single-cycle CPI)", [1.0] * len(rows), "#94a3b8"),
+         ("Pipeline fill (4 cycles)", fill, "#a78bfa"),
+         ("Load-use stalls (1 cycle each)", stall, "#f59e0b"),
+         ("Branch / jump flushes (2 cycles each)", flush, "#0284c7")]
+bottom = [0.0] * len(rows)
+for label, vals, col in parts:
+    ax.bar(x, vals, 0.55, bottom=bottom, label=label, color=col)
+    bottom = [b + v for b, v in zip(bottom, vals)]
+for xi, c in zip(x, cpi):
+    ax.text(xi, c + 0.02, f"CPI {c:.2f}", ha="center", va="bottom", fontsize=9, fontweight="bold")
 ax.set_xticks(list(x))
-ax.set_xticklabels(names)
-ax.set_ylabel("CPI (cycles per instruction)")
-ax.set_ylim(0, max(r[4] for r in rows) * 1.2)
-ax.axhline(1.0, color="#475569", lw=0.8, ls="--")
-ax.set_title("Measured CPI per benchmark (hardware counters, Icarus Verilog)")
+ax.set_xticklabels([f"{n}\n({k:,} instr.)" for n, k in zip(names, N)])
+ax.set_ylabel("Cycles per instruction (CPI)")
+ax.set_ylim(0, max(cpi) * 1.22)
+ax.set_title("Where the pipeline's cycles go (measured; single-cycle core is CPI 1.00)")
 ax.spines[["top", "right"]].set_visible(False)
 ax.legend(frameon=False, fontsize=8, loc="upper left")
 fig.tight_layout()
-fig.savefig(os.path.join(here, "benchmark_cpi.png"))
-print("wrote benchmark_cpi.png and benchmark_results.csv")
+out = os.path.join(ROOT, "docs", "figures", "benchmark_cpi.png")
+fig.savefig(out)
+print("wrote", out)

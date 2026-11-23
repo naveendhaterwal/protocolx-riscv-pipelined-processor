@@ -227,7 +227,7 @@ for c_idx in range(TOTAL_CYCLES):
 print(f"Generated {frame_idx} frames in {FRAME_DIR}")
 
 # Convert to high-quality animated GIF using ffmpeg
-GIF_OUTPUT = "/Users/n2/Desktop/mca project/diagrams/pipeline_animation.gif"
+GIF_OUTPUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs", "diagrams", "pipeline_animation.gif")
 cmd = [
     "ffmpeg", "-y",
     "-framerate", "10",

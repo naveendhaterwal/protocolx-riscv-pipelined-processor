@@ -5,7 +5,7 @@
 # Description: Generates prog_subset.hex, a program that exercises the full
 #              Project-3 instruction subset (ADD, SUB, ADDI, LW, SW, BEQ, BNE)
 #              and is used by tb_riscv_subset.v to measure cycles and CPI.
-#              Usage (from repo root): python3 testbench/programs/gen_prog_subset.py
+#              Usage: python3 scripts/gen_prog_subset.py
 # =============================================================================
 import os
 
@@ -47,7 +47,7 @@ PROGRAM = [
 ] + [NOP] * 8
 
 if __name__ == "__main__":
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prog_subset.hex")
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "testbench", "programs", "prog_subset.hex")
     with open(out, "w") as f:
         f.write("\n".join(f"{w:08x}" for w in PROGRAM) + "\n")
-    print(f"Wrote {len(PROGRAM)} words to {out}")
+    print(f"Wrote {len(PROGRAM)} words to {os.path.normpath(out)}")

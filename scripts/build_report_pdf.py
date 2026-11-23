@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Builds docs/IEEE_Phase2_Project_Report.pdf (and .html) from the Markdown report.
+Builds docs/IEEE_Phase2_Project_Report.pdf (and a temporary .html) from the Markdown report.
 Needs:  pip install markdown playwright   (and `python -m playwright install chromium` once)
-Run from the repo root:  python3 docs/build_report_pdf.py   [--html-only | --pdf-only]
+Run from the repo root:  python3 scripts/build_report_pdf.py   [--html-only | --pdf-only]
 """
 import os
 import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs")
 SRC = os.path.join(HERE, "IEEE_Phase2_Project_Report.md")
 HTML = os.path.join(HERE, "IEEE_Phase2_Project_Report.html")
 PDF = os.path.join(HERE, "IEEE_Phase2_Project_Report.pdf")
@@ -16,6 +16,7 @@ CSS = """
 @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
 body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.38; color: #111; }
 h1 { font-size: 17pt; text-align: center; margin: 0 0 10pt; line-height: 1.2; }
+h2, h3 { page-break-after: avoid; break-after: avoid; }
 h2 { font-size: 12.5pt; margin: 16pt 0 6pt; border-bottom: 1px solid #999; padding-bottom: 2pt; }
 h3 { font-size: 11pt; margin: 11pt 0 4pt; font-style: italic; }
 p, li { text-align: justify; }

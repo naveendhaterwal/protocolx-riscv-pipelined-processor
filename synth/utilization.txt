@@ -1,33 +1,32 @@
 
-26. Printing statistics.
+18. Printing statistics.
 
 === riscv_core ===
 
         +----------Local Count, excluding submodules.
         | 
-    15966 wires
-    29655 wire bits
-       54 public wires
-      399 public wire bits
-       10 ports
-      169 port bits
-    10891 cells
-       19   $scopeinfo
+     2378 wires
+     7395 wire bits
+       45 public wires
+      204 public wire bits
+        7 ports
+      104 port bits
+     3781 cells
+       11   $scopeinfo
         1   BUFG
-     1326   CARRY4
-        4   DSP48E1
-     1938   FDCE
-       84   FDPE
-       35   IBUF
-       25   INV
-     1005   LUT2
-     1514   LUT3
-     1795   LUT4
-     2101   LUT5
-      786   LUT6
-       62   MUXF7
-       29   MUXF8
-      134   OBUF
+       46   CARRY4
+     1521   FDCE
+        4   FDPE
+        2   IBUF
+        2   INV
+       97   LUT2
+      268   LUT3
+      357   LUT4
+      797   LUT5
+      537   LUT6
+        2   MUXF7
+        1   MUXF8
+      102   OBUF
        32   RAM256X1S
         1   instruction_memory
 
