@@ -12,7 +12,6 @@ Welcome to the **ProtocolX** repository! This is our college engineering project
 > **New here?** Read [`docs/LEARNING_GUIDE.md`](docs/LEARNING_GUIDE.md): it explains every part of the design in simple language, the problems we faced and the alternatives we considered.
 
 ---
-
 ## 🔎 Where to look (for a code review)
 
 | You want to see… | Open |
