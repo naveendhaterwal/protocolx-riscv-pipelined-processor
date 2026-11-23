@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # =============================================================================
-# fpga/run_fmax.sh - real maximum clock frequency (Fmax) with open-source tools.
+# scripts/run_fmax.sh - real maximum clock frequency (Fmax) with open-source tools.
 #
 # Flow: Yosys (synth_ecp5) -> nextpnr-ecp5 place & route -> static timing.
 # Target: Lattice ECP5 LFE5U-85F (no board needed; nextpnr only needs the chip
 # database). We use ECP5 because Vivado (for Xilinx Artix-7) does not run on
 # macOS; the numbers are therefore ECP5 numbers, not Artix-7 numbers.
 #
+# Builds two designs with the same top (fpga/fpga_top.v), the same demo program
+# and the same tools: the 5-stage pipeline and the single-cycle baseline.
+#
 # Needs OSS CAD Suite (https://github.com/YosysHQ/oss-cad-suite-build):
-#   OSS=~/tools/oss-cad-suite-20261112/oss-cad-suite bash fpga/run_fmax.sh
-# Results go to fpga/results/.
+#   OSS=~/tools/oss-cad-suite-20261112/oss-cad-suite bash scripts/run_fmax.sh
+# Results go to fpga/results/ ; summarise with:  python3 scripts/summarize_fmax.py
 # =============================================================================
 set -e
 cd "$(dirname "$0")/.."
@@ -19,16 +22,14 @@ NEXTPNR="$OSS/bin/nextpnr-ecp5"
 OUT=fpga/results
 mkdir -p "$OUT"
 
-python3 tools/rvasm.py fpga/fpga_demo.s
+python3 scripts/rvasm.py fpga/fpga_demo.s
+RTL=$(ls rtl/*.v | tr '\n' ' ')
 
-RTL_ALL=$(ls rtl/*.v | tr '\n' ' ')
-RTL_NO_M=$(ls rtl/*.v | grep -v muldiv_unit | tr '\n' ' ')
-
-run() {   # name  use_pipeline  "rtl files"
-  name=$1; pipe=$2; files=$3
+run() {   # name  use_pipeline(1/0)
+  name=$1; pipe=$2
   echo ">>> $name: synthesis"
   nice -n 15 "$YOSYS" -q -l "$OUT/$name.yosys.log" -p "
-    read_verilog -Irtl rtl/riscv_defines.vh $files fpga/fpga_top.v
+    read_verilog -Irtl rtl/riscv_defines.vh $RTL fpga/fpga_top.v
     chparam -set USE_PIPELINE $pipe fpga_top
     synth_ecp5 -top fpga_top -json $OUT/$name.json
     tee -o $OUT/$name.utilization.txt stat"
@@ -39,8 +40,6 @@ run() {   # name  use_pipeline  "rtl files"
   grep -E "Max frequency for clock" "$OUT/$name.nextpnr.log" | tail -1 | sed "s/^/    $name: /"
 }
 
-run pipeline_rv32im     1 "$RTL_ALL"
-run single_cycle_rv32im 0 "$RTL_ALL"
-run pipeline_rv32i      1 "$RTL_NO_M fpga/muldiv_stub.v"
-run single_cycle_rv32i  0 "$RTL_NO_M fpga/muldiv_stub.v"
+run pipeline     1
+run single_cycle 0
 echo "Done. Logs in $OUT/"

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-rvasm.py - a tiny RISC-V (RV32IM + Zicsr) assembler for the ProtocolX processor.
+rvasm.py - a tiny RISC-V RV32I assembler for the ProtocolX processor.
 
 Why we wrote our own: the full GNU toolchain (riscv64-unknown-elf-gcc) is a large
 install and outputs ELF files we would then have to convert. Our test programs are
 small, so a ~250-line Python assembler is easier to read, install and change.
 
 Usage:
-    python3 tools/rvasm.py program.s -o program.hex
+    python3 scripts/rvasm.py program.s -o program.hex
 
 Input format (one instruction per line):
     label:                 # a label marks an address
@@ -15,8 +15,7 @@ Input format (one instruction per line):
     lw   t0, 8(sp)         # loads/stores use offset(base)
     beq  t0, t1, label     # branch/jump targets can be labels
     .word 0x12345678       # raw 32-bit word
-Pseudo-instructions: nop, li, la, mv, not, neg, j, jr, ret, call, beqz, bnez, bgt, ble,
-                     csrr, csrw, csrs, csrc, csrwi, csrsi, csrci
+Pseudo-instructions: nop, li, la, mv, not, neg, j, jr, ret, call, beqz, bnez, bgt, ble
 Output: one 32-bit word per line in hex, which $readmemh loads into instruction memory.
 """
 import re
@@ -31,24 +30,16 @@ REG = {name: i for i, name in enumerate(ABI)}
 REG.update({f"x{i}": i for i in range(32)})
 REG["fp"] = 8
 
-CSR = {"mstatus": 0x300, "mie": 0x304, "mtvec": 0x305, "mscratch": 0x340, "mepc": 0x341,
-       "mcause": 0x342, "mtval": 0x343, "mip": 0x344, "mcycle": 0xB00, "minstret": 0xB02,
-       "mcycleh": 0xB80, "minstreth": 0xB82, "cycle": 0xC00, "instret": 0xC02}
-
 # ---------------------------------------------------------------- opcode tables
 #            funct7, funct3
 R_TYPE = {"add": (0x00, 0), "sub": (0x20, 0), "sll": (0x00, 1), "slt": (0x00, 2),
           "sltu": (0x00, 3), "xor": (0x00, 4), "srl": (0x00, 5), "sra": (0x20, 5),
-          "or": (0x00, 6), "and": (0x00, 7),
-          # RV32M (funct7 = 0000001)
-          "mul": (0x01, 0), "mulh": (0x01, 1), "mulhsu": (0x01, 2), "mulhu": (0x01, 3),
-          "div": (0x01, 4), "divu": (0x01, 5), "rem": (0x01, 6), "remu": (0x01, 7)}
+          "or": (0x00, 6), "and": (0x00, 7),}
 I_ALU = {"addi": 0, "slti": 2, "sltiu": 3, "xori": 4, "ori": 6, "andi": 7}
 SHIFT_I = {"slli": (0x00, 1), "srli": (0x00, 5), "srai": (0x20, 5)}
-LOADS = {"lb": 0, "lh": 1, "lw": 2, "lbu": 4, "lhu": 5}
-STORES = {"sb": 0, "sh": 1, "sw": 2}
+LOADS = {"lw": 2}
+STORES = {"sw": 2}
 BRANCHES = {"beq": 0, "bne": 1, "blt": 4, "bge": 5, "bltu": 6, "bgeu": 7}
-CSR_OPS = {"csrrw": 1, "csrrs": 2, "csrrc": 3, "csrrwi": 5, "csrrsi": 6, "csrrci": 7}
 
 
 def r_type(f7, rs2, rs1, f3, rd, op):
@@ -149,16 +140,6 @@ def expand(mn, ops):
         return [("blt", [ops[1], ops[0], ops[2]])]
     if mn == "ble":
         return [("bge", [ops[1], ops[0], ops[2]])]
-    if mn == "csrr":
-        return [("csrrs", [ops[0], ops[1], "x0"])]
-    if mn == "csrw":
-        return [("csrrw", ["x0", ops[0], ops[1]])]
-    if mn == "csrs":
-        return [("csrrs", ["x0", ops[0], ops[1]])]
-    if mn == "csrc":
-        return [("csrrc", ["x0", ops[0], ops[1]])]
-    if mn in ("csrwi", "csrsi", "csrci"):     # immediate forms, result discarded
-        return [("csrr" + mn[3] + "i", ["x0", ops[0], ops[1]])]
     if mn == "la":                      # load address of a label: always auipc + addi
         return [("auipc", [ops[0], "%pcrel_hi " + ops[1]]),
                 ("addi", [ops[0], ops[0], "%pcrel_lo " + ops[1]])]
@@ -216,16 +197,6 @@ def encode(mn, ops, pc, labels):
         return u_type(num(ops[1]), reg(ops[0]), 0x37)
     if mn == "auipc":
         return u_type(num(ops[1]), reg(ops[0]), 0x17)
-    if mn in CSR_OPS:
-        csr = CSR.get(ops[1].strip().lower()) if ops[1].strip().lower() in CSR else num(ops[1])
-        src = num(ops[2]) & 31 if mn.endswith("i") else reg(ops[2])
-        return i_type(csr, src, CSR_OPS[mn], reg(ops[0]), 0x73)
-    if mn == "ecall":
-        return 0x00000073
-    if mn == "ebreak":
-        return 0x00100073
-    if mn == "mret":
-        return 0x30200073
     raise AsmError(f"unknown instruction '{mn}'")
 
 
