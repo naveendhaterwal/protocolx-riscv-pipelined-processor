@@ -57,17 +57,17 @@ The catch is **hazards**: situations where the next instruction cannot go ahead 
 
 | File | What it does |
 |---|---|
-| `rtl/riscv_core.v` | **Top level**: connects the 5 stages and 4 pipeline registers |
-| `rtl/riscv_defines.vh` | Constants: opcodes, ALU operation codes |
-| `rtl/control_unit.v` | Decodes an instruction into control signals |
-| `rtl/reg_file.v` | 32 registers (`x0` is always 0) |
-| `rtl/imm_gen.v` | Builds the constant stored inside an instruction (the *immediate*) |
-| `rtl/alu.v` | Add, subtract, logic, shifts, comparisons |
-| `rtl/execution_unit.v` | EX stage: forwarding multiplexers, ALU, branch check, target address |
-| `rtl/hazard_unit.v` | Decides forwarding, load-use stall and flush |
-| `rtl/pipe_if_id.v` … `pipe_mem_wb.v` | The 4 pipeline registers |
-| `rtl/instruction_memory.v`, `data_memory.v` | Program memory (loaded from a `.hex` file) and data RAM |
-| `rtl/single_cycle_core.v` | **Baseline** core for comparison |
+| `rtl/riscv_core_n.v` | **Top level**: connects the 5 stages and 4 pipeline registers |
+| `rtl/riscv_defines_n.vh` | Constants: opcodes, ALU operation codes |
+| `rtl/control_unit_ar.v` | Decodes an instruction into control signals |
+| `rtl/reg_file_ar.v` | 32 registers (`x0` is always 0) |
+| `rtl/imm_gen_ar.v` | Builds the constant stored inside an instruction (the *immediate*) |
+| `rtl/alu_s.v` | Add, subtract, logic, shifts, comparisons |
+| `rtl/execution_unit_s.v` | EX stage: forwarding multiplexers, ALU, branch check, target address |
+| `rtl/hazard_unit_s.v` | Decides forwarding, load-use stall and flush |
+| `rtl/pipe_if_id_n.v` … `pipe_mem_wb_a.v` | The 4 pipeline registers |
+| `rtl/instruction_memory_n.v`, `data_memory_ar.v` | Program memory (loaded from a `.hex` file) and data RAM |
+| `rtl/single_cycle_core_n.v` | **Baseline** core for comparison |
 | `testbench/tb_*.v` | Testbenches (Section 6) |
 | `testbench/programs/*.s` | Test and benchmark programs written in assembly |
 | `scripts/rvasm.py` | Our assembler: assembly text → `.hex` |
@@ -150,7 +150,7 @@ Example, `sum` benchmark: 654 + 4 + 64 + 2×126 = **974**, exactly what the simu
 
 ## 5. The single-cycle baseline
 
-The course says to verify a single-cycle datapath first and to compare against a baseline. `rtl/single_cycle_core.v` is built from the **same modules** (control unit, execution unit, register file, immediate generator, memories) but with **no pipeline registers, no forwarding and no hazards**. Every instruction finishes in one (long) cycle, so CPI = 1 exactly.
+The course says to verify a single-cycle datapath first and to compare against a baseline. `rtl/single_cycle_core_n.v` is built from the **same modules** (control unit, execution unit, register file, immediate generator, memories) but with **no pipeline registers, no forwarding and no hazards**. Every instruction finishes in one (long) cycle, so CPI = 1 exactly.
 
 Why not just trust the pipeline's own CPI? Because CPI alone can mislead: the pipeline has a **higher** CPI but a **shorter** clock period. Only *cycles × clock period* tells the truth.
 
@@ -209,11 +209,11 @@ Vivado (for Xilinx chips) does not run on macOS, so we used the open-source flow
 
 | # | Problem | How we found it | Fix | Lesson |
 |---|---|---|---|---|
-| 1 | Design passed simulation but **did not synthesize** (`pipe_id_ex.v`) | Ran Yosys: "Multiple edge sensitive events" | Separate `if (!rst_n)` from `else if (flush)` | Simulation ≠ hardware. An async-reset branch may only test the reset signal. |
+| 1 | Design passed simulation but **did not synthesize** (`pipe_id_ex_a.v`) | Ran Yosys: "Multiple edge sensitive events" | Separate `if (!rst_n)` from `else if (flush)` | Simulation ≠ hardware. An async-reset branch may only test the reset signal. |
 | 2 | **BNE was never tested** | Broke BNE on purpose; all tests still passed | Added a BNE loop test, then the 146-test program | Coverage must be checked, not assumed |
 | 3 | Test script printed **SUCCESS even when tests failed** | Mutation runs showed failures plus a success banner | The script now searches the log for failures and exits 1 | `vvp` exits 0 even when checks fail |
 | 4 | Synthesis reported only **103 cells** for a whole CPU | The number was impossibly small | Black-box the instruction memory for area runs | An empty ROM makes every instruction constant, so synthesis deletes the datapath |
-| 5 | The FPGA run **optimised the whole CPU away** (21 cells, "no timing paths") | Synthesised the instruction memory alone: 0 cells | The NOP-fill `for` loop in `instruction_memory.v` turned into memory *write* ports and the program was lost. It is now inside `` `ifndef SYNTHESIS `` | Code that is harmless in simulation can mean something else to a synthesis tool |
+| 5 | The FPGA run **optimised the whole CPU away** (21 cells, "no timing paths") | Synthesised the instruction memory alone: 0 cells | The NOP-fill `for` loop in `instruction_memory_n.v` turned into memory *write* ports and the program was lost. It is now inside `` `ifndef SYNTHESIS `` | Code that is harmless in simulation can mean something else to a synthesis tool |
 | 6 | "Logic loop" warnings for the single-cycle core | Read the loop path: it went through the register-file bypass mux | The bypass is built with a `generate` block, so with `BYPASS = 0` that hardware does not exist | Use `generate` to remove hardware, not `parameter && …` |
 | 7 | The data RAM was built from flip-flops | A reset loop cleared all 1,024 words in one cycle | Removed the loop; the RAM starts as zeros in simulation and maps to RAM resources | Reset loops over memories are expensive on an FPGA |
 | 8 | Measured instruction count was **one too high** | Compared three independent counts | Sample 1 ns **after** the clock edge | At the edge itself, flip-flops have not updated yet |
@@ -228,7 +228,7 @@ From the course project document (Project 3):
 |---|---|
 | 5-stage pipeline (IF, ID, EX, MEM, WB) with pipeline registers | ✅ |
 | Subset ADD, SUB, ADDI, LW, SW, BEQ, BNE | ✅ (we implement the full RV32I base set except byte/half-word loads and stores, fences and system instructions) |
-| First verify a single-cycle datapath, compare against a baseline | ✅ `single_cycle_core.v` |
+| First verify a single-cycle datapath, compare against a baseline | ✅ `single_cycle_core_n.v` |
 | Benchmark programs, CPI / IPC | ✅ 4 benchmarks |
 | Waveforms from a simulator | ✅ `simulation/*.vcd` |
 | Synthesis with resources and maximum frequency | ✅ Yosys + nextpnr (ECP5) |

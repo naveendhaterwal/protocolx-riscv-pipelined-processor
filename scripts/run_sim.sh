@@ -33,11 +33,11 @@ run_tb() {
   vvp -n "$TMP/t.vvp" | tee -a "$LOG"
 }
 
-RTL="rtl/riscv_defines.vh rtl/*.v"
+RTL="rtl/riscv_defines_n.vh rtl/*.v"
 
-run_tb "1. ALU Unit Test..."                      "rtl/alu.v testbench/tb_alu.v"
-run_tb "2. Register File Unit Test..."            "rtl/reg_file.v testbench/tb_reg_file.v"
-run_tb "3. Hazard Unit Test..."                   "rtl/hazard_unit.v testbench/tb_hazard_unit.v"
+run_tb "1. ALU Unit Test..."                      "rtl/alu_s.v testbench/tb_alu.v"
+run_tb "2. Register File Unit Test..."            "rtl/reg_file_ar.v testbench/tb_reg_file.v"
+run_tb "3. Hazard Unit Test..."                   "rtl/hazard_unit_s.v testbench/tb_hazard_unit.v"
 run_tb "4. Core Pipeline Arithmetic Test..."      "$RTL testbench/tb_riscv_core.v"
 run_tb "5. Core RAW Data Hazard Forwarding Test..." "$RTL testbench/tb_riscv_hazard.v"
 run_tb "6. Core Memory & Load-Use Stall Test..."  "$RTL testbench/tb_riscv_mem.v"

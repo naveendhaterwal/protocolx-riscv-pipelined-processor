@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       control_unit.v
+// File:       control_unit_ar.v
 // Description: Main Control and ALU Decoder generating pipeline control signals
 //              based on instruction opcode, funct3, and funct7.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
@@ -8,7 +8,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module control_unit (
     input  wire [6:0] opcode,

@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       pipe_if_id.v
+// File:       pipe_if_id_n.v
 // Description: IF/ID Pipeline Register. Latches PC and fetched instruction.
 //              Supports synchronous stall (hold) and flush (NOP insertion).
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
@@ -8,7 +8,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module pipe_if_id (
     input  wire              clk,

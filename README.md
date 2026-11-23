@@ -16,9 +16,9 @@ Welcome to the **ProtocolX** repository! This is our college engineering project
 
 | You want to see… | Open |
 |---|---|
-| The processor (all Verilog) | [`rtl/`](rtl/): start with [`riscv_core.v`](rtl/riscv_core.v) (top level) |
-| How hazards are handled | [`rtl/hazard_unit.v`](rtl/hazard_unit.v) (forwarding, load-use stall, flush) |
-| The single-cycle baseline | [`rtl/single_cycle_core.v`](rtl/single_cycle_core.v) |
+| The processor (all Verilog) | [`rtl/`](rtl/): start with [`riscv_core_n.v`](rtl/riscv_core_n.v) (top level) |
+| How hazards are handled | [`rtl/hazard_unit_s.v`](rtl/hazard_unit_s.v) (forwarding, load-use stall, flush) |
+| The single-cycle baseline | [`rtl/single_cycle_core_n.v`](rtl/single_cycle_core_n.v) |
 | The tests | [`testbench/`](testbench/) (Verilog testbenches) and [`testbench/programs/`](testbench/programs/) (assembly programs) |
 | Every helper script | [`scripts/`](scripts/) (assembler, test generator, run scripts, FPGA flow) |
 | Architecture diagram | [`docs/diagrams/protocolx_pipeline_architecture.svg`](docs/diagrams/protocolx_pipeline_architecture.svg) |
@@ -32,10 +32,10 @@ Final responsibility allocation. Each member answers for these parts of the proj
 
 | Roll Number | Name | Area | Responsible for |
 |:---:|:---|:---|:---|
-| **2401020041** | **Naveen Kumar** | **Core architecture** | `riscv_core.v`, `riscv_defines.vh`, `pipe_if_id.v`, `instruction_memory.v` |
-| **2401010032** | **Aditya Raj** | **Pipeline registers and verification** | `pipe_id_ex.v`, `pipe_ex_mem.v`, `pipe_mem_wb.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
-| **2401010095** | **Archit Mamodiya** | **Instruction decode and memory** | `control_unit.v`, `reg_file.v`, `imm_gen.v`, `data_memory.v`, `tb_riscv_mem.v` |
-| **2401020060** | **Shagun Vishnoi** | **Execution and hazards** | `alu.v`, `execution_unit.v`, `hazard_unit.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
+| **2401020041** | **Naveen Kumar** | **Core architecture** | `riscv_core_n.v`, `riscv_defines_n.vh`, `pipe_if_id_n.v`, `instruction_memory_n.v` |
+| **2401010032** | **Aditya Raj** | **Pipeline registers and verification** | `pipe_id_ex_a.v`, `pipe_ex_mem_a.v`, `pipe_mem_wb_a.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
+| **2401010095** | **Archit Mamodiya** | **Instruction decode and memory** | `control_unit_ar.v`, `reg_file_ar.v`, `imm_gen_ar.v`, `data_memory_ar.v`, `tb_riscv_mem.v` |
+| **2401020060** | **Shagun Vishnoi** | **Execution and hazards** | `alu_s.v`, `execution_unit_s.v`, `hazard_unit_s.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
 | **2401010388** | **Ritik Ranjan** | **Reports, presentation and documentation** | IEEE Phase I and Phase II reports, the presentation, architecture diagrams (`docs/diagrams/`), `README.md` and repository documentation, demonstration video material |
 
 Each member supplies and checks the technical content for their own area, so that the reports and the presentation describe the design accurately.
@@ -86,7 +86,7 @@ Instruction 5:                         [IF]  [ID]  [EX]  [MEM] [WB]
 - **Control hazards:** branches and jumps are resolved in EX, so the two instructions fetched after a taken branch are flushed (2 cycles lost).
 
 ### The single-cycle baseline
-[`rtl/single_cycle_core.v`](rtl/single_cycle_core.v) is built from the *same* modules but without pipeline registers: every instruction finishes in one (long) cycle, so CPI = 1. The pipeline needs more cycles but each one is much shorter. Comparing the two is how we show that pipelining actually pays off.
+[`rtl/single_cycle_core_n.v`](rtl/single_cycle_core_n.v) is built from the *same* modules but without pipeline registers: every instruction finishes in one (long) cycle, so CPI = 1. The pipeline needs more cycles but each one is much shorter. Comparing the two is how we show that pipelining actually pays off.
 
 ---
 
@@ -95,14 +95,14 @@ Instruction 5:                         [IF]  [ID]  [EX]  [MEM] [WB]
 ```
 protocolx-riscv-pipelined-processor/
 ├── rtl/                          # Verilog design (this is the processor)
-│   ├── riscv_defines.vh          #   constants: opcodes, ALU operation codes
-│   ├── riscv_core.v              #   TOP LEVEL: 5-stage pipelined core
-│   ├── single_cycle_core.v       #   single-cycle baseline core
-│   ├── alu.v  reg_file.v  imm_gen.v  control_unit.v
-│   ├── hazard_unit.v             #   forwarding, load-use stall, flush
-│   ├── execution_unit.v          #   EX stage: forwarding muxes, ALU, branch check
-│   ├── instruction_memory.v  data_memory.v
-│   └── pipe_if_id.v  pipe_id_ex.v  pipe_ex_mem.v  pipe_mem_wb.v
+│   ├── riscv_defines_n.vh          #   constants: opcodes, ALU operation codes
+│   ├── riscv_core_n.v              #   TOP LEVEL: 5-stage pipelined core
+│   ├── single_cycle_core_n.v       #   single-cycle baseline core
+│   ├── alu_s.v  reg_file_ar.v  imm_gen_ar.v  control_unit_ar.v
+│   ├── hazard_unit_s.v             #   forwarding, load-use stall, flush
+│   ├── execution_unit_s.v          #   EX stage: forwarding muxes, ALU, branch check
+│   ├── instruction_memory_n.v  data_memory_ar.v
+│   └── pipe_if_id_n.v  pipe_id_ex_a.v  pipe_ex_mem_a.v  pipe_mem_wb_a.v
 │
 ├── testbench/                    # Verilog testbenches and test programs
 │   ├── tb_alu.v  tb_reg_file.v  tb_hazard_unit.v           # unit tests

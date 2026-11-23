@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       alu.v
+// File:       alu_s.v
 // Description: Arithmetic Logic Unit executing 32-bit integer arithmetic,
 //              logical, shift, and comparison operations.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
@@ -8,7 +8,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module alu (
     input  wire [3:0]        alu_op,

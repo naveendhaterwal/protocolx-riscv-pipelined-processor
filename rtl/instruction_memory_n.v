@@ -1,13 +1,13 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       instruction_memory.v
+// File:       instruction_memory_n.v
 // Description: Instruction Memory (ROM/RAM model) storing RV32I machine code.
 //              Supports preloading via $readmemh hex files. Word-aligned addressing.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module instruction_memory #(
     parameter MEM_DEPTH = 1024,

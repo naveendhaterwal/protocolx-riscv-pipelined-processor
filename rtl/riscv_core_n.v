@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       riscv_core.v
+// File:       riscv_core_n.v
 // Description: Top-Level 5-Stage Pipelined RV32I Processor Core.
 //              Integrates IF, ID, EX, MEM, and WB stages with hazard detection,
 //              data forwarding, and pipeline registers.
@@ -9,7 +9,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module riscv_core #(
     parameter IMEM_DEPTH = 1024,

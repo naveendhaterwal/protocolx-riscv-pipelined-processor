@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       riscv_defines.vh
+// File:       riscv_defines_n.vh
 // Description: Global parameters, opcodes, ALU operation codes, and pipeline
 //              control definitions for RV32I Base Integer Instruction Set.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer

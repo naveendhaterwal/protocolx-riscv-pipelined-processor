@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       hazard_unit.v
+// File:       hazard_unit_s.v
 // Description: Hazard Detection & Forwarding Unit.
 //              - Resolves RAW data hazards via EX/MEM and MEM/WB operand forwarding.
 //              - Detects load-use data hazards and inserts 1-cycle pipeline stalls.
@@ -10,7 +10,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module hazard_unit (
     // Hazard detection inputs

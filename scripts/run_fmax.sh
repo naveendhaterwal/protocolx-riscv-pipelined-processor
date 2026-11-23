@@ -29,7 +29,7 @@ run() {   # name  use_pipeline(1/0)
   name=$1; pipe=$2
   echo ">>> $name: synthesis"
   nice -n 15 "$YOSYS" -q -l "$OUT/$name.yosys.log" -p "
-    read_verilog -Irtl rtl/riscv_defines.vh $RTL fpga/fpga_top.v
+    read_verilog -Irtl rtl/riscv_defines_n.vh $RTL fpga/fpga_top.v
     chparam -set USE_PIPELINE $pipe fpga_top
     synth_ecp5 -top fpga_top -json $OUT/$name.json
     tee -o $OUT/$name.utilization.txt stat"

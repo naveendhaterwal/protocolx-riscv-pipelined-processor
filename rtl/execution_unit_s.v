@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       execution_unit.v
+// File:       execution_unit_s.v
 // Description: Execution Stage (EX) combining Forwarding Multiplexers,
 //              ALU instance, Branch Condition Evaluator, and Target Address Generator.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
@@ -8,7 +8,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module execution_unit (
     input  wire [`XLEN-1:0]  pc,
