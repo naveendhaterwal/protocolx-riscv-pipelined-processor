@@ -27,14 +27,6 @@ module pipe_id_ex (
     input  wire                      jump_in,
     input  wire                      is_jalr_in,
     input  wire [3:0]                alu_op_in,
-    input  wire                      valid_in,
-    input  wire                      pred_taken_in,
-    input  wire                      muldiv_in,
-    input  wire                      is_csr_in,
-    input  wire                      is_ecall_in,
-    input  wire                      is_ebreak_in,
-    input  wire                      is_mret_in,
-    input  wire                      illegal_in,
 
     // Datapath Values Input
     input  wire [`XLEN-1:0]          pc_in,
@@ -59,14 +51,6 @@ module pipe_id_ex (
     output reg                       jump_out,
     output reg                       is_jalr_out,
     output reg  [3:0]                alu_op_out,
-    output reg                       valid_out,
-    output reg                       pred_taken_out,
-    output reg                       muldiv_out,
-    output reg                       is_csr_out,
-    output reg                       is_ecall_out,
-    output reg                       is_ebreak_out,
-    output reg                       is_mret_out,
-    output reg                       illegal_out,
 
     // Datapath Values Output
     output reg  [`XLEN-1:0]          pc_out,
@@ -96,14 +80,6 @@ module pipe_id_ex (
             jump_out       <= 1'b0;
             is_jalr_out    <= 1'b0;
             alu_op_out     <= `ALU_ADD;
-            valid_out      <= 1'b0;
-            pred_taken_out <= 1'b0;
-            muldiv_out     <= 1'b0;
-            is_csr_out     <= 1'b0;
-            is_ecall_out   <= 1'b0;
-            is_ebreak_out  <= 1'b0;
-            is_mret_out    <= 1'b0;
-            illegal_out    <= 1'b0;
 
             pc_out         <= {`XLEN{1'b0}};
             pc_plus4_out   <= {`XLEN{1'b0}};
@@ -126,14 +102,6 @@ module pipe_id_ex (
             jump_out       <= 1'b0;
             is_jalr_out    <= 1'b0;
             alu_op_out     <= `ALU_ADD;
-            valid_out      <= 1'b0;
-            pred_taken_out <= 1'b0;
-            muldiv_out     <= 1'b0;
-            is_csr_out     <= 1'b0;
-            is_ecall_out   <= 1'b0;
-            is_ebreak_out  <= 1'b0;
-            is_mret_out    <= 1'b0;
-            illegal_out    <= 1'b0;
 
             pc_out         <= {`XLEN{1'b0}};
             pc_plus4_out   <= {`XLEN{1'b0}};
@@ -156,14 +124,6 @@ module pipe_id_ex (
             jump_out       <= jump_in;
             is_jalr_out    <= is_jalr_in;
             alu_op_out     <= alu_op_in;
-            valid_out      <= valid_in;
-            pred_taken_out <= pred_taken_in;
-            muldiv_out     <= muldiv_in;
-            is_csr_out     <= is_csr_in;
-            is_ecall_out   <= is_ecall_in;
-            is_ebreak_out  <= is_ebreak_in;
-            is_mret_out    <= is_mret_in;
-            illegal_out    <= illegal_in;
 
             pc_out         <= pc_in;
             pc_plus4_out   <= pc_plus4_in;
