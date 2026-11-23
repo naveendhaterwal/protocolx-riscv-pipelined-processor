@@ -1,13 +1,13 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       imm_gen.v
+// File:       imm_gen_ar.v
 // Description: Immediate Generator decoding and sign-extending I, S, B, U, and J
 //              type immediate formats according to RISC-V RV32I specification.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module imm_gen (
     input  wire [`XLEN-1:0]  instruction,

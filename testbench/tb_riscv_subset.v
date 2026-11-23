@@ -10,7 +10,7 @@
 //                              + 5 taken branches x 2 flushed slots = 38.
 // =============================================================================
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module tb_riscv_subset;
 

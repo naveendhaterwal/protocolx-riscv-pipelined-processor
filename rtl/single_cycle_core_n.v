@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       single_cycle_core.v
+// File:       single_cycle_core_n.v
 // Description: BASELINE for comparison: a single-cycle RV32I core.
 //              Every instruction does fetch, decode, execute, memory and
 //              write-back in ONE (long) clock cycle, so CPI = 1 exactly.
@@ -16,7 +16,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module single_cycle_core #(
     parameter IMEM_DEPTH = 1024,

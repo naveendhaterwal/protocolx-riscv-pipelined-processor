@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       reg_file.v
+// File:       reg_file_ar.v
 // Description: 32x32-bit General Purpose Register File with hardwired zero (x0),
 //              dual asynchronous read ports, synchronous write port, and internal
 //              write-to-read forwarding (bypass) for same-cycle hazard prevention.
@@ -9,7 +9,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module reg_file #(
     // BYPASS = 1 (pipeline): a register being written this cycle is read as the NEW
