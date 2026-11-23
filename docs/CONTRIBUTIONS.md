@@ -19,6 +19,7 @@ This document has two parts:
 | **Aditya Raj** (2401010032) | Pipeline registers and verification | `rtl/pipe_id_ex.v`, `rtl/pipe_ex_mem.v`, `rtl/pipe_mem_wb.v` | `testbench/tb_hazard_unit.v`, `testbench/tb_alu.v`; the verification report (`docs/VERIFICATION_REPORT.md`) and test evidence (`simulation/simulation_results.log`, `simulation/*.vcd`) |
 | **Archit Mamodiya** (2401010095) | Instruction decode and memory | `rtl/control_unit.v`, `rtl/reg_file.v`, `rtl/imm_gen.v`, `rtl/data_memory.v` | `testbench/tb_riscv_mem.v` |
 | **Shagun Vishnoi** (2401020060) | Execution and hazards | `rtl/alu.v`, `rtl/execution_unit.v`, `rtl/hazard_unit.v` | `testbench/tb_riscv_hazard.v`, `testbench/tb_riscv_branch.v` |
+| **Ritik Ranjan** (2401010388) | Reports, presentation and documentation | — | the reports, presentation and documentation listed in A.3 |
 
 ### A.2 The same allocation, stage by stage
 
@@ -33,18 +34,24 @@ This document has two parts:
 | MEM: Memory Access | `data_memory.v` | Archit |
 | | `pipe_mem_wb.v` | Aditya |
 | WB: Write Back | write-back multiplexer in `riscv_core.v` | Naveen |
+| Documentation and presentation | reports, presentation, `docs/diagrams/`, `README.md`, video material | Ritik |
 
 Each member should be able to explain their modules and how the signals cross the boundary to the stage next to them.
 
-### A.3 Ritik Ranjan's former responsibilities, redistributed
+### A.3 Reports, presentation and documentation (Ritik Ranjan)
 
-Ritik Ranjan (2401010388) remains a member of the team. His earlier areas (architecture diagrams, GitHub documentation, video preparation) are redistributed as follows. His Phase I contributions stay recorded in Part B.
+Ritik Ranjan (2401010388) is responsible for the written and presented side of the project:
 
-| Former responsibility | Now with | Why it fits |
-|:---|:---|:---|
-| Architecture block diagram and walkthrough (`docs/diagrams/`) | **Naveen**; the hazard and forwarding paths are explained by **Shagun** | The diagram shows the core architecture; the hazard paths belong to the execution and hazards area |
-| GitHub documentation: `README.md` and repository structure | **Archit** | Keeps the documentation index with the decode and memory area, balancing the load across the team |
-| Demonstration video script and video link | **Aditya** | The demonstration presents the verification report and test evidence |
+| Deliverable | Where |
+|:---|:---|
+| IEEE Phase I report | `docs/IEEE_Phase1_Project_Report.*` |
+| IEEE Phase II report | `docs/IEEE_Phase2_Project_Report.*` |
+| Presentation | the project slide deck (HTML) |
+| Architecture diagrams and walkthrough | `docs/diagrams/` |
+| README and repository documentation | `README.md` |
+| Demonstration video material | the script and the video link (the link is in `README.md`) |
+
+The technical content for each part is supplied and checked by the member responsible for that part (A.1), so the reports and the presentation describe the design accurately. The verification report stays with Aditya (A.1).
 
 ### A.4 Shared items
 
@@ -53,7 +60,7 @@ These are not assigned to one person in this allocation and remain shared by the
 - the single-cycle baseline `rtl/single_cycle_core.v`;
 - testbenches `tb_riscv_core.v`, `tb_reg_file.v`, `tb_riscv_subset.v`, `tb_programs.v`, `tb_single_cycle.v` and the programs in `testbench/programs/`;
 - `scripts/` (assembler, test generator, run scripts), `fpga/` and `synth/`;
-- the reports, `docs/LEARNING_GUIDE.md` and the Phase II report.
+- `docs/LEARNING_GUIDE.md`.
 
 ---
 

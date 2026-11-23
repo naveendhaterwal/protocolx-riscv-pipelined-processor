@@ -2,11 +2,11 @@
 
 **Team Members:**
 
-- **Naveen Kumar** (Roll No: 2401020041) — Project Lead & Primary RTL Developer
-- **Aditya Raj** (Roll No: 2401010032) — Technical Lead, Pipeline Design & Verification
-- **Archit Mamodiya** (Roll No: 2401010095) — Literature Review & Research
-- **Shagun Vishnoi** (Roll No: 2401020060) — IEEE Report & Documentation
-- **Ritik Ranjan** (Roll No: 2401010388) — Architecture Diagrams, GitHub Documentation & Video Prep
+- **Naveen Kumar** (Roll No: 2401020041) — Core architecture
+- **Aditya Raj** (Roll No: 2401010032) — Pipeline registers and verification
+- **Archit Mamodiya** (Roll No: 2401010095) — Instruction decode and memory
+- **Shagun Vishnoi** (Roll No: 2401020060) — Execution and hazards
+- **Ritik Ranjan** (Roll No: 2401010388) — Reports, presentation and documentation
 
 **Department of Computer Science & Applications**
 
@@ -172,15 +172,17 @@ Both designs use about 6 % of the chip's logic. Execution time = cycles / Fmax:
 
 ---
 
-## 8. Individual Team Contributions
+## 8. Team Responsibilities
 
-The Phase I contributions are listed in `docs/CONTRIBUTIONS.md`. In Phase II:
+Final responsibility allocation. Each member answers for these parts of the project (review, explanation, questions). The stage-by-stage view and the historical Phase I record are in `docs/CONTRIBUTIONS.md`.
 
-| Member | Phase II contribution |
-|---|---|
-| Naveen Kumar | Single-cycle baseline, benchmarks, assembler and generated tests, synthesis fixes, FPGA flow, this report and the learning guide |
-| Aditya Raj | Hazard and forwarding logic and testbenches (Phase I), which the benchmarks and the cycle model exercise |
-| Archit Mamodiya, Shagun Vishnoi, Ritik Ranjan | Documentation, report and diagram contributions as listed in `docs/CONTRIBUTIONS.md` |
+| Member | Area | Responsible for |
+|---|---|---|
+| Naveen Kumar | Core architecture | `riscv_core.v`, `riscv_defines.vh`, `pipe_if_id.v`, `instruction_memory.v` |
+| Aditya Raj | Pipeline registers and verification | `pipe_id_ex.v`, `pipe_ex_mem.v`, `pipe_mem_wb.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
+| Archit Mamodiya | Instruction decode and memory | `control_unit.v`, `reg_file.v`, `imm_gen.v`, `data_memory.v`, `tb_riscv_mem.v` |
+| Shagun Vishnoi | Execution and hazards | `alu.v`, `execution_unit.v`, `hazard_unit.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
+| Ritik Ranjan | Reports, presentation and documentation | IEEE Phase I and Phase II reports, the presentation, architecture diagrams, `README.md`, demonstration video material |
 
 Teammates also wrote optional extension modules during Phase II (a 2-bit branch predictor, a performance counter, a load-alignment unit and a GPIO unit). They are not part of the final design, which follows the project specification, but they remain in the repository's git history.
 

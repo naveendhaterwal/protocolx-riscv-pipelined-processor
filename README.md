@@ -29,7 +29,7 @@ Welcome to the **ProtocolX** repository! This is our college engineering project
 
 ## 👥 The ProtocolX Team
 
-Final responsibility allocation. Each member answers for these parts of the design (review, explanation, questions). Details, the stage-by-stage view and the historical Phase I record are in [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
+Final responsibility allocation. Each member answers for these parts of the project (review, explanation, questions). Details, the stage-by-stage view and the historical Phase I record are in [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
 
 | Roll Number | Name | Area | Responsible for |
 |:---:|:---|:---|:---|
@@ -37,15 +37,9 @@ Final responsibility allocation. Each member answers for these parts of the desi
 | **2401010032** | **Aditya Raj** | **Pipeline registers and verification** | `pipe_id_ex.v`, `pipe_ex_mem.v`, `pipe_mem_wb.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
 | **2401010095** | **Archit Mamodiya** | **Instruction decode and memory** | `control_unit.v`, `reg_file.v`, `imm_gen.v`, `data_memory.v`, `tb_riscv_mem.v` |
 | **2401020060** | **Shagun Vishnoi** | **Execution and hazards** | `alu.v`, `execution_unit.v`, `hazard_unit.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
+| **2401010388** | **Ritik Ranjan** | **Reports, presentation and documentation** | IEEE Phase I and Phase II reports, the presentation, architecture diagrams (`docs/diagrams/`), `README.md` and repository documentation, demonstration video material |
 
-**Ritik Ranjan (2401010388)** is also a member of the team. His earlier responsibilities are redistributed: the architecture diagram to Naveen (with the hazard paths explained by Shagun), the GitHub documentation to Archit, and the demonstration video material to Aditya. His Phase I contributions remain recorded in [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
-
----:|:---|:---|
-| **2401020041** | **Naveen Kumar** | **Project Lead & Primary RTL Developer**<br>Core processor architecture, ALU, Register File, Immediate Generator, and top-level datapath integration. |
-| **2401010032** | **Aditya Raj** | **Technical Lead, Pipeline Design & Verification**<br>Hazard detection unit, RAW data forwarding logic, testbench development, and simulation verification. |
-| **2401010095** | **Archit Mamodiya** | **Literature Review & Research**<br>RISC-V specification analysis, comparative study of open-source academic cores, and literature review. |
-| **2401020060** | **Shagun Vishnoi** | **IEEE Report & Documentation**<br>Authoring and formatting the IEEE Phase I report, compiling authentic academic citations, and documentation. |
-| **2401010388** | **Ritik Ranjan** | **Architecture Diagrams, GitHub Docs & Video Preparation**<br>Creating SVG block diagrams, diagram guide, video presentation script, and video link coordination. |
+Each member supplies and checks the technical content for their own area, so that the reports and the presentation describe the design accurately.
 
 ---
 
