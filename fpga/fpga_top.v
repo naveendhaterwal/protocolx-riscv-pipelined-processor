@@ -15,7 +15,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module fpga_top #(
     parameter PROG         = "fpga/fpga_demo.hex",

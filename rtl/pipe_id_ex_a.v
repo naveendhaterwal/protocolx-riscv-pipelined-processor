@@ -1,6 +1,6 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       pipe_id_ex.v
+// File:       pipe_id_ex_a.v
 // Description: ID/EX Pipeline Register. Latches decoded instruction control signals,
 //              register operands, immediate, PC, and source/dest register indices.
 //              Supports synchronous flush for branch mispredictions and stalls.
@@ -9,7 +9,7 @@
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module pipe_id_ex (
     input  wire                      clk,

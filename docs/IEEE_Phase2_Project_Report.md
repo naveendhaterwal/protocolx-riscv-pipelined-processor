@@ -56,7 +56,7 @@ Five stages (IF, ID, EX, MEM, WB) separated by four pipeline registers. A hazard
 The branch policy is "always not taken": a taken branch costs two cycles, a branch that is not taken costs nothing.
 
 ### 2.2 Single-cycle baseline
-`rtl/single_cycle_core.v` reuses the same control unit, execution unit, register file, immediate generator and memories, without pipeline registers, forwarding or hazards. Every instruction takes exactly one cycle, so CPI = 1 by construction. Its register file disables the write-to-read bypass, which would otherwise create a combinational loop in a single-cycle design.
+`rtl/single_cycle_core_n.v` reuses the same control unit, execution unit, register file, immediate generator and memories, without pipeline registers, forwarding or hazards. Every instruction takes exactly one cycle, so CPI = 1 by construction. Its register file disables the write-to-read bypass, which would otherwise create a combinational loop in a single-cycle design.
 
 ### 2.3 Cycle model
 For a program of N instructions on the pipeline:
@@ -153,7 +153,7 @@ Both designs use about 6 % of the chip's logic. Execution time = cycles / Fmax:
 | BNE was never tested | No Phase I test ran a BNE instruction; found when an inverted BNE still passed | Subset test with a BNE loop, then the 146-test ISA program |
 | Test script printed "success" even when checks failed | `vvp` exits with 0 even when checks fail | The script now searches the log for failures and exits with 1 |
 | Synthesis reported only 103 cells for a CPU | The empty instruction ROM made every instruction constant, so the tools deleted the datapath | Black-box the ROM for area runs; use a real demo program for FPGA runs |
-| FPGA run removed the whole CPU again | The simulation-only NOP-fill loop in `instruction_memory.v` became memory *write* ports in synthesis, so the program was lost | The fill loop is now inside `` `ifndef SYNTHESIS `` |
+| FPGA run removed the whole CPU again | The simulation-only NOP-fill loop in `instruction_memory_n.v` became memory *write* ports in synthesis, so the program was lost | The fill loop is now inside `` `ifndef SYNTHESIS `` |
 | False combinational-loop warning on the single-cycle core | The register-file bypass multiplexer was always built | The bypass is a `generate` option, off for the single-cycle core |
 | RAM built from flip-flops | A reset loop cleared all 1,024 data words in one cycle | Removed the loop; the RAM starts as zeros in simulation and maps to RAM resources |
 | Instruction count off by one | The testbench sampled signals exactly at the clock edge, before flip-flops update | Sample 1 ns after the edge; three independent counts now agree |
@@ -178,10 +178,10 @@ Final responsibility allocation. Each member answers for these parts of the proj
 
 | Member | Area | Responsible for |
 |---|---|---|
-| Naveen Kumar | Core architecture | `riscv_core.v`, `riscv_defines.vh`, `pipe_if_id.v`, `instruction_memory.v` |
-| Aditya Raj | Pipeline registers and verification | `pipe_id_ex.v`, `pipe_ex_mem.v`, `pipe_mem_wb.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
-| Archit Mamodiya | Instruction decode and memory | `control_unit.v`, `reg_file.v`, `imm_gen.v`, `data_memory.v`, `tb_riscv_mem.v` |
-| Shagun Vishnoi | Execution and hazards | `alu.v`, `execution_unit.v`, `hazard_unit.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
+| Naveen Kumar | Core architecture | `riscv_core_n.v`, `riscv_defines_n.vh`, `pipe_if_id_n.v`, `instruction_memory_n.v` |
+| Aditya Raj | Pipeline registers and verification | `pipe_id_ex_a.v`, `pipe_ex_mem_a.v`, `pipe_mem_wb_a.v`, `tb_hazard_unit.v`, `tb_alu.v`, the verification report and test evidence |
+| Archit Mamodiya | Instruction decode and memory | `control_unit_ar.v`, `reg_file_ar.v`, `imm_gen_ar.v`, `data_memory_ar.v`, `tb_riscv_mem.v` |
+| Shagun Vishnoi | Execution and hazards | `alu_s.v`, `execution_unit_s.v`, `hazard_unit_s.v`, `tb_riscv_hazard.v`, `tb_riscv_branch.v` |
 | Ritik Ranjan | Reports, presentation and documentation | IEEE Phase I and Phase II reports, the presentation, architecture diagrams, `README.md`, demonstration video material |
 
 Teammates also wrote optional extension modules during Phase II (a 2-bit branch predictor, a performance counter, a load-alignment unit and a GPIO unit). They are not part of the final design, which follows the project specification, but they remain in the repository's git history.

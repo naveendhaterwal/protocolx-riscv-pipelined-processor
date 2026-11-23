@@ -1,13 +1,13 @@
 // =============================================================================
 // Project:    ProtocolX RISC-V 5-Stage Pipelined Processor
-// File:       data_memory.v
+// File:       data_memory_ar.v
 // Description: Synchronous Data Memory (RAM) for Load and Store instructions.
 //              Synchronous write on posedge clk, asynchronous read access.
 // Developers:  Naveen Kumar (2401020041) - Primary RTL Developer
 // =============================================================================
 
 `timescale 1ns / 1ps
-`include "riscv_defines.vh"
+`include "riscv_defines_n.vh"
 
 module data_memory #(
     parameter MEM_DEPTH = 1024

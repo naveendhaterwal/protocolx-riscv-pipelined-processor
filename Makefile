@@ -13,7 +13,7 @@
 IV = iverilog
 VVP = vvp
 IVFLAGS = -g2012 -Irtl
-RTL = rtl/riscv_defines.vh rtl/*.v
+RTL = rtl/riscv_defines_n.vh rtl/*.v
 
 .PHONY: all test test_alu test_core test_hazard test_mem test_branch test_subset \
         asm test_programs bench synth fpga clean
@@ -25,7 +25,7 @@ test:
 
 # ---- single testbenches ------------------------------------------------------
 test_alu:
-	$(IV) $(IVFLAGS) -o simulation/tb_alu.vvp rtl/alu.v testbench/tb_alu.v
+	$(IV) $(IVFLAGS) -o simulation/tb_alu.vvp rtl/alu_s.v testbench/tb_alu.v
 	$(VVP) simulation/tb_alu.vvp
 	@rm -f simulation/tb_alu.vvp
 
@@ -75,7 +75,7 @@ bench: asm
 # contents are not constant-folded away; numbers are Yosys estimates, not Vivado.
 synth:
 	@echo "Synthesising riscv_core with Yosys (synth_xilinx, xc7)..."
-	yosys -q -l synth/synth_report.log -p "read_verilog -Irtl rtl/riscv_defines.vh synth/imem_blackbox.v $$(ls rtl/*.v | grep -v -e instruction_memory -e single_cycle_core | tr '\n' ' '); hierarchy -top riscv_core -chparam DMEM_DEPTH 256; synth_xilinx -top riscv_core -flatten -family xc7; tee -o synth/utilization.txt stat"
+	yosys -q -l synth/synth_report.log -p "read_verilog -Irtl rtl/riscv_defines_n.vh synth/imem_blackbox.v $$(ls rtl/*.v | grep -v -e instruction_memory -e single_cycle_core | tr '\n' ' '); hierarchy -top riscv_core -chparam DMEM_DEPTH 256; synth_xilinx -top riscv_core -flatten -family xc7; tee -o synth/utilization.txt stat"
 	@echo "Synthesis OK. Utilization written to synth/utilization.txt"
 
 # Real place-and-route + maximum clock frequency (Lattice ECP5, no board needed).

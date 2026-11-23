@@ -15,25 +15,25 @@ This document has two parts:
 
 | Member | Area | RTL files | Tests and evidence |
 |:---|:---|:---|:---|
-| **Naveen Kumar** (2401020041) | Core architecture | `rtl/riscv_core.v`, `rtl/riscv_defines.vh`, `rtl/pipe_if_id.v`, `rtl/instruction_memory.v` | — |
-| **Aditya Raj** (2401010032) | Pipeline registers and verification | `rtl/pipe_id_ex.v`, `rtl/pipe_ex_mem.v`, `rtl/pipe_mem_wb.v` | `testbench/tb_hazard_unit.v`, `testbench/tb_alu.v`; the verification report (`docs/VERIFICATION_REPORT.md`) and test evidence (`simulation/simulation_results.log`, `simulation/*.vcd`) |
-| **Archit Mamodiya** (2401010095) | Instruction decode and memory | `rtl/control_unit.v`, `rtl/reg_file.v`, `rtl/imm_gen.v`, `rtl/data_memory.v` | `testbench/tb_riscv_mem.v` |
-| **Shagun Vishnoi** (2401020060) | Execution and hazards | `rtl/alu.v`, `rtl/execution_unit.v`, `rtl/hazard_unit.v` | `testbench/tb_riscv_hazard.v`, `testbench/tb_riscv_branch.v` |
+| **Naveen Kumar** (2401020041) | Core architecture | `rtl/riscv_core_n.v`, `rtl/riscv_defines_n.vh`, `rtl/pipe_if_id_n.v`, `rtl/instruction_memory_n.v` | — |
+| **Aditya Raj** (2401010032) | Pipeline registers and verification | `rtl/pipe_id_ex_a.v`, `rtl/pipe_ex_mem_a.v`, `rtl/pipe_mem_wb_a.v` | `testbench/tb_hazard_unit.v`, `testbench/tb_alu.v`; the verification report (`docs/VERIFICATION_REPORT.md`) and test evidence (`simulation/simulation_results.log`, `simulation/*.vcd`) |
+| **Archit Mamodiya** (2401010095) | Instruction decode and memory | `rtl/control_unit_ar.v`, `rtl/reg_file_ar.v`, `rtl/imm_gen_ar.v`, `rtl/data_memory_ar.v` | `testbench/tb_riscv_mem.v` |
+| **Shagun Vishnoi** (2401020060) | Execution and hazards | `rtl/alu_s.v`, `rtl/execution_unit_s.v`, `rtl/hazard_unit_s.v` | `testbench/tb_riscv_hazard.v`, `testbench/tb_riscv_branch.v` |
 | **Ritik Ranjan** (2401010388) | Reports, presentation and documentation | — | the reports, presentation and documentation listed in A.3 |
 
 ### A.2 The same allocation, stage by stage
 
 | Stage | Modules | Responsible |
 |:---|:---|:---|
-| Top level | `riscv_core.v`, `riscv_defines.vh` | Naveen |
-| IF: Instruction Fetch | PC logic in `riscv_core.v`, `instruction_memory.v`, `pipe_if_id.v` | Naveen |
-| ID: Instruction Decode | `control_unit.v`, `reg_file.v`, `imm_gen.v` | Archit |
-| | `pipe_id_ex.v` | Aditya |
-| EX: Execute | `alu.v`, `execution_unit.v`, `hazard_unit.v` | Shagun |
-| | `pipe_ex_mem.v` | Aditya |
-| MEM: Memory Access | `data_memory.v` | Archit |
-| | `pipe_mem_wb.v` | Aditya |
-| WB: Write Back | write-back multiplexer in `riscv_core.v` | Naveen |
+| Top level | `riscv_core_n.v`, `riscv_defines_n.vh` | Naveen |
+| IF: Instruction Fetch | PC logic in `riscv_core_n.v`, `instruction_memory_n.v`, `pipe_if_id_n.v` | Naveen |
+| ID: Instruction Decode | `control_unit_ar.v`, `reg_file_ar.v`, `imm_gen_ar.v` | Archit |
+| | `pipe_id_ex_a.v` | Aditya |
+| EX: Execute | `alu_s.v`, `execution_unit_s.v`, `hazard_unit_s.v` | Shagun |
+| | `pipe_ex_mem_a.v` | Aditya |
+| MEM: Memory Access | `data_memory_ar.v` | Archit |
+| | `pipe_mem_wb_a.v` | Aditya |
+| WB: Write Back | write-back multiplexer in `riscv_core_n.v` | Naveen |
 | Documentation and presentation | reports, presentation, `docs/diagrams/`, `README.md`, video material | Ritik |
 
 Each member should be able to explain their modules and how the signals cross the boundary to the stage next to them.
@@ -57,7 +57,7 @@ The technical content for each part is supplied and checked by the member respon
 
 These are not assigned to one person in this allocation and remain shared by the team:
 
-- the single-cycle baseline `rtl/single_cycle_core.v`;
+- the single-cycle baseline `rtl/single_cycle_core_n.v`;
 - testbenches `tb_riscv_core.v`, `tb_reg_file.v`, `tb_riscv_subset.v`, `tb_programs.v`, `tb_single_cycle.v` and the programs in `testbench/programs/`;
 - `scripts/` (assembler, test generator, run scripts), `fpga/` and `synth/`;
 - `docs/LEARNING_GUIDE.md`.
@@ -89,18 +89,18 @@ This document gives an honest and clear breakdown of what each team member worke
 #### 1. Naveen Kumar (2401020041) — Project Lead & Primary RTL Developer
 - Planned the top-level architecture and overall timeline for Phase I.
 - Implemented the core Verilog modules:
-  - `rtl/riscv_defines.vh` (Constants, opcodes, funct codes, and ALU operations).
-  - `rtl/alu.v` (Arithmetic Logic Unit for RV32I basic instructions).
-  - `rtl/reg_file.v` (32-register bank, x0 hardwired zero, synchronous write, same-cycle bypass).
-  - `rtl/imm_gen.v` (Immediate sign-extension for I, S, B, U, J types).
-  - `rtl/control_unit.v` (Main instruction decoder and ALU control).
-  - `rtl/pipe_if_id.v`, `rtl/pipe_id_ex.v`, `rtl/pipe_ex_mem.v`, `rtl/pipe_mem_wb.v` (The 4 pipeline registers).
-  - `rtl/riscv_core.v` (Connecting all stages, wires, and modules together into the full processor core).
+  - `rtl/riscv_defines_n.vh` (Constants, opcodes, funct codes, and ALU operations).
+  - `rtl/alu_s.v` (Arithmetic Logic Unit for RV32I basic instructions).
+  - `rtl/reg_file_ar.v` (32-register bank, x0 hardwired zero, synchronous write, same-cycle bypass).
+  - `rtl/imm_gen_ar.v` (Immediate sign-extension for I, S, B, U, J types).
+  - `rtl/control_unit_ar.v` (Main instruction decoder and ALU control).
+  - `rtl/pipe_if_id_n.v`, `rtl/pipe_id_ex_a.v`, `rtl/pipe_ex_mem_a.v`, `rtl/pipe_mem_wb_a.v` (The 4 pipeline registers).
+  - `rtl/riscv_core_n.v` (Connecting all stages, wires, and modules together into the full processor core).
 
 #### 2. Aditya Raj (2401010032) — Technical Lead, Pipeline Design & Verification
 - Designed the Hazard and Forwarding logic:
-  - `rtl/hazard_unit.v` (Detecting EX/MEM and MEM/WB forwarding for RAW data hazards, 1-cycle stall for load-use hazards, and pipeline flushes on taken branches).
-  - `rtl/execution_unit.v` (Forwarding multiplexers, branch condition checker, target address calculation).
+  - `rtl/hazard_unit_s.v` (Detecting EX/MEM and MEM/WB forwarding for RAW data hazards, 1-cycle stall for load-use hazards, and pipeline flushes on taken branches).
+  - `rtl/execution_unit_s.v` (Forwarding multiplexers, branch condition checker, target address calculation).
 - Wrote the testbenches and created hex test programs:
   - `testbench/tb_alu.v` (ALU unit tests).
   - `testbench/tb_reg_file.v` (Register file unit tests).
