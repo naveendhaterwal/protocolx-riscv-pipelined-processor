@@ -41,7 +41,7 @@ This document gives an honest and clear breakdown of what each team member worke
   - `testbench/tb_riscv_hazard.v` (RAW hazard forwarding tests).
   - `testbench/tb_riscv_mem.v` (Data memory load/store and stall tests).
   - `testbench/tb_riscv_branch.v` (Branch condition and flush tests).
-- Automated test runs using Icarus Verilog (`simulation/run_sim.sh`) and verified output waveforms.
+- Automated test runs using Icarus Verilog (`scripts/run_sim.sh`) and verified output waveforms.
 
 ### 3. Archit Mamodiya (2401010095) — Literature Review & Research
 - Studied the official RISC-V RV32I specification (Volume I: Unprivileged ISA).
@@ -56,8 +56,8 @@ This document gives an honest and clear breakdown of what each team member worke
 - Checked that all citations and references are genuine and properly cited.
 
 ### 5. Ritik Ranjan (2401010388) — Architecture Diagrams, GitHub Documentation & Video Prep
-- Designed the clean vector architecture block diagram (`diagrams/protocolx_pipeline_architecture.svg`).
-- Wrote the step-by-step architectural walkthrough guide (`diagrams/diagram_description.md`).
-- Prepared the 5-minute prototype presentation script (`video/VIDEO_DEMO_SCRIPT.md`) dividing speaking time across all 5 members.
-- Created the video link placeholder document (`video/VIDEO_LINK.md`) for the final demonstration recording.
+- Designed the clean vector architecture block diagram (`docs/diagrams/protocolx_pipeline_architecture.svg`).
+- Wrote the step-by-step architectural walkthrough guide (`docs/diagrams/diagram_description.md`).
+- Prepared the 5-minute prototype presentation script (`VIDEO_DEMO_SCRIPT.md`, now kept in the team's video archive outside this repository) dividing speaking time across all 5 members.
+- Created the video link placeholder document (link document; the video link is in the README) for the final demonstration recording.
 - Assisted in structuring the GitHub repository README.

@@ -1,4 +1,4 @@
-# PROTOCOLX: A 5-Stage Pipelined RV32IM Processor with Branch Prediction, Traps and Memory-Mapped I/O (Phase II Report)
+# PROTOCOLX: Performance Evaluation and FPGA Implementation of a 5-Stage Pipelined RV32I Processor (Phase II Report)
 
 **Team Members:**
 
@@ -16,70 +16,54 @@
 
 ## Abstract
 
-In Phase I we built and verified a 5-stage pipelined RISC-V (RV32I) processor with data forwarding, a load-use stall and branch flushing. In Phase II we turned it into a more complete processor and measured how good it is. We added a **2-bit dynamic branch predictor**, the **RV32M multiply/divide extension**, **byte and half-word memory access**, **CSRs with precise exceptions and timer/external interrupts**, **memory-mapped GPIO and a machine timer**, and **hardware performance counters**. To compare fairly, we also built a **single-cycle baseline** from the same modules.
+In Phase I we designed and verified a 5-stage pipelined RISC-V (RV32I) processor in Verilog, with data forwarding, a load-use stall and branch flushing. Phase II answers the question a pipeline must answer: *is it actually faster?* We built a **single-cycle baseline** from the same modules, wrote four benchmark programs (with our own assembler), measured **CPI and IPC** for both designs, and measured the **real maximum clock frequency** of both with an open-source FPGA flow (Yosys and nextpnr on a Lattice ECP5).
 
-All features are verified in simulation (Icarus Verilog) by self-checking programs: a generated test of 234 cases covering every RV32IM instruction, a trap/interrupt test, and four benchmarks, plus the 51 Phase I checks. We used **mutation testing** (deliberately breaking the hardware) to show the tests can detect real bugs. The branch predictor lowers the pipeline's CPI from 1.19–1.57 to **1.05–1.24**. Using the open-source FPGA flow (Yosys + nextpnr) we measured real post-place-and-route clock frequencies: with the full RV32IM unit both cores are limited to about 5 MHz by the single-cycle divider (pipeline 5.45 MHz, single-cycle 4.94 MHz); without it the pipeline reaches **62.4 MHz versus 30.4 MHz**, making the benchmarks **1.65–1.95× faster** in real time than the single-cycle baseline.
+The pipeline needs more cycles per instruction (CPI 1.35–1.57, against exactly 1.00 for the baseline) but its clock is **1.75× faster** (67.8 MHz against 38.8 MHz), so the benchmarks finish **1.12× to 1.30× sooner**. The extra cycles are fully explained by a simple model, `cycles = N + 4 + stalls + 2 × flushes`, which matched the measurement exactly on all four benchmarks. Verification uses self-checking programs (a generated 146-test RV32I program and the four benchmarks, on both designs) plus the 51 Phase I checks, and we used **mutation testing** to show the tests can detect real bugs.
 
-**Index Terms** — RISC-V, pipelining, branch prediction, precise exceptions, FPGA, CPI.
+**Index Terms** — RISC-V, pipelining, CPI, IPC, FPGA, place and route, single-cycle baseline.
 
 ---
 
 ## 1. Introduction
 
-A pipeline only pays off if it keeps most of its stages busy. In Phase I every taken branch cost two cycles, and the core could only run integer arithmetic on whole words. Real programs need more:
+A pipeline overlaps the execution of several instructions, which shortens the clock period, but hazards force it to stall or flush, which raises the number of cycles per instruction (CPI). Whether the trade is worthwhile can only be decided by measuring both effects together:
 
-- multiplication and division;
-- reading and writing single bytes;
-- reacting to the outside world (switches, timers);
-- a way to recover from errors.
+> execution time = instructions × CPI × clock period
 
-Phase II has two goals:
+Phase II therefore has three goals, following the course project specification for the pipelined RISC-V processor:
 
-1. **Complete the processor**: the Phase II items planned in our Phase I report (CSRs, interrupts, branch prediction, RV32M, synthesis).
-2. **Measure it honestly**: CPI and IPC from hardware counters, area and maximum frequency from synthesis and place-and-route, and a comparison against a single-cycle baseline, as the course project specification requires.
+1. **A baseline:** verify a single-cycle datapath first and use it for comparison.
+2. **Performance:** measure CPI and IPC on benchmark programs.
+3. **Implementation:** report resource use and the maximum operating frequency.
+
+**Scope.** In the Phase I report we listed possible extensions (exception handling with CSRs, interrupts, dynamic branch prediction, an RV32M multiplier and divider). They are not part of the project specification, so the final design deliberately stays a plain RV32I processor: the instruction subset required by the specification plus the rest of the RV32I base set, with word-sized loads and stores.
 
 ---
 
-## 2. Phase II Architecture
+## 2. Design
 
-![Phase II block diagram](figures/phase2_architecture.png)
+![Pipeline architecture](diagrams/protocolx_pipeline_architecture.svg)
 
-*Fig. 1. Block-level view of the Phase II core. Blocks marked NEW were added or completed in Phase II. The detailed wire-level Phase I datapath is in `diagrams/protocolx_pipeline_architecture.svg`.*
+*Fig. 1. The 5-stage pipeline (wire-level diagram by Ritik Ranjan).*
 
-### 2.1 Valid bit
-Every pipeline register now carries a `valid` bit, which is 0 for bubbles (after reset, a stall or a flush). The performance counter counts only valid instructions, and interrupts are only attached to valid instructions, which have a meaningful PC.
+### 2.1 Pipelined core
+Five stages (IF, ID, EX, MEM, WB) separated by four pipeline registers. A hazard unit provides:
 
-### 2.2 Dynamic branch prediction
-A 16-entry table of 2-bit saturating counters (`branch_predictor_2bit.v`, indexed by PC[5:2]) predicts whether a branch is taken. Because our instruction memory returns the instruction in the same cycle, the IF stage can already decode the B-type immediate and compute the target `PC + imm`. **No branch target buffer is needed.** The prediction travels with the instruction. EX compares it with the real outcome; on a mismatch the PC is redirected (to the target or to PC + 4), two instructions are flushed, and the counter is updated.
+- **Forwarding** from EX/MEM and MEM/WB into the ALU inputs (EX/MEM has priority, as it holds the newer value);
+- a **1-cycle stall** for a load followed immediately by its use;
+- a **flush** of the two younger instructions when a branch or jump is taken (resolved in EX).
 
-*Alternatives considered:* static not-taken (Phase I), 1-bit history (mispredicts twice per loop), resolving branches in ID (1-cycle penalty, but comparators and forwarding into ID lengthen that stage), and gshare (more accurate, more hardware).
+The branch policy is "always not taken": a taken branch costs two cycles, a branch that is not taken costs nothing.
 
-### 2.3 RV32M
-`muldiv_unit.v` implements MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM and REMU in one combinational cycle. It handles the edge cases defined by the specification: division by zero returns −1 or the dividend, and overflow (−2³¹ ÷ −1) returns −2³¹ with remainder 0. Section 5 shows the cost of this simple choice: it limits the whole core to about 5 MHz.
+### 2.2 Single-cycle baseline
+`rtl/single_cycle_core.v` reuses the same control unit, execution unit, register file, immediate generator and memories, without pipeline registers, forwarding or hazards. Every instruction takes exactly one cycle, so CPI = 1 by construction. Its register file disables the write-to-read bypass, which would otherwise create a combinational loop in a single-cycle design.
 
-### 2.4 Byte and half-word access
-Loads use `mem_align_unit.v` (select and sign/zero-extend). Stores use `store_align_unit.v` (byte lanes and byte enables). The data memory has four byte-write enables. Its reset loop was removed so FPGA tools can implement it as RAM instead of flip-flops.
+### 2.3 Cycle model
+For a program of N instructions on the pipeline:
 
-### 2.5 CSRs and traps
-`csr_unit.v` implements Zicsr and the machine-mode CSRs: `mstatus`, `mie`, `mip`, `mtvec`, `mepc`, `mcause`, `mtval`, `mscratch`, `mcycle`, `minstret`. Exceptions (ECALL, EBREAK, illegal instruction) and interrupts (timer, external) are taken when the instruction is in **EX**:
+> cycles = N + 4 + S + 2·T
 
-- `mepc` ← PC of that instruction, and `mcause` ← the reason;
-- interrupts are disabled (MIE ← 0);
-- the two younger instructions are flushed, and the EX instruction is cancelled by a bubble in EX/MEM;
-- the PC jumps to `mtvec`;
-- MRET returns to `mepc` and restores MIE.
-
-Older instructions in MEM and WB complete, so traps are **precise**.
-
-### 2.6 Memory-mapped I/O and timer
-Addresses with bit 31 set go to devices instead of RAM:
-
-- GPIO output (LEDs) at `0x80000000`;
-- GPIO input (switches) at `0x80000004`;
-- the 64-bit `mtime` / `mtimecmp` timer at `0x80000010`–`1C`, which raises the timer interrupt.
-
-### 2.7 Single-cycle baseline
-`single_cycle_core.v` reuses the same control unit, ALU, multiply/divide unit, memories and devices without pipeline registers, so CPI = 1 by construction. Its register file disables the write-to-read bypass, which would form a combinational loop in a single-cycle design.
+where 4 is the pipeline fill, S the number of load-use stall cycles and T the number of taken branches and jumps. This model is checked against the measurement for every benchmark (Section 4).
 
 ---
 
@@ -87,93 +71,77 @@ Addresses with bit 31 set go to devices instead of RAM:
 
 | Suite | What it checks | Result |
 |---|---|---|
-| Phase I testbenches (8) | ALU, register file, hazard unit, arithmetic, forwarding, load-use stall, branch flush, instruction subset with exact cycle count | 51/51 pass |
-| Teammates' unit tests (4) | GPIO, load alignment, branch predictor, performance counter | pass |
-| `isa_test` (generated) | **234 tests**: every RV32IM instruction with edge values, CSR operations, forwarding, load-use | pass, predictor on and off |
-| `trap_test` | ECALL, EBREAK, illegal instruction, timer and external interrupts, GPIO, precise interrupt check | pass, predictor on and off |
-| 4 benchmarks | self-checking results on 3 designs | pass |
+| Phase I testbenches (8) | ALU, register file, hazard unit, arithmetic, forwarding, load-use stall, branch flush, 7-instruction subset with exact cycle count | 51 / 51 pass |
+| `isa_test` (generated) | **146 tests**: every RV32I instruction with edge values, forwarding chains, load-use, all six branch types with signed and unsigned operands, JAL and JALR, writes to x0 | pass on pipeline **and** single-cycle |
+| 4 benchmarks | each program checks its own answer | pass on both designs |
 
-**Generated tests.** `tools/gen_isa_test.py` computes every expected value with a small Python reference model, so no answer is calculated by hand. Programs are assembled by our own assembler (`tools/rvasm.py`), which was checked bit-for-bit against hand-encoded programs and reference encodings.
+**Self-checking programs.** A program stores `1` (pass) or a failure code to the last word of data RAM; the testbench reads it. Nobody has to read waveforms to know whether a test passed.
 
-**Mutation testing.** We deliberately broke the hardware and confirmed each break was caught:
+**Generated tests with a golden model.** `scripts/gen_isa_test.py` computes every expected value with a small Python reference model, so no answer is calculated by hand. Programs are assembled by our own assembler (`scripts/rvasm.py`), which we checked bit for bit against hand-encoded programs and reference encodings.
 
-- inverted BNE;
-- wrong sign on DIV;
-- broken SB byte enables;
-- wrong MULHSU signedness;
-- removed the trap's EX/MEM flush.
+**Mutation testing.** We deliberately broke the hardware and confirmed each break was detected, and that the failure message named the broken instruction:
 
-This exposed and fixed two weaknesses: BNE had been untested in Phase I, and the test script printed "success" even when checks failed.
+| Injected bug | Detected by |
+|---|---|
+| BNE condition inverted | subset test: "BNE loop sum expected 15, got 5" |
+| SRA behaves like SRL | ALU unit test: "SRA −2³¹ >>> 2" |
+| Forwarding from EX/MEM disabled | hazard-unit test and the pipeline forwarding tests |
 
-**Cycle-exact cross-check.** For `bench_sum` with prediction off: 654 instructions + 64 load-use stalls + 126 mispredictions × 2 + 4 fill cycles = **974 cycles**, exactly what the hardware counter measured.
-
-![Timer interrupt waveform](figures/timer_interrupt_waveform.png)
-
-*Fig. 2. Real simulation waveform (`simulation/waveform_trap_test.vcd`): the timer interrupt is taken on the instruction in EX (cycle 169), the younger instructions are flushed, `mepc` captures the interrupted PC, and fetch continues at the handler.*
+**Cycle-exact cross-check.** For `sum`: 654 instructions + 4 + 64 stalls + 2 × 126 flushes = **974 cycles**, exactly the measured value (Section 4). Because the count is exact, a change to the hazard logic that adds or removes even one cycle makes the test fail.
 
 ---
 
 ## 4. Performance Results
 
-| Benchmark | Single-cycle cycles (CPI) | Pipeline, no predictor cycles (CPI / IPC) | Pipeline + 2-bit predictor cycles (CPI / IPC) | Mispredictions (off → on) |
-|---|---|---|---|---|
-| fib (Fibonacci 30) | 160 (1.000) | 222 (1.387 / 0.721) | 168 (**1.050 / 0.952**) | 29 → 2 |
-| sum (array of 64) | 654 (1.000) | 974 (1.489 / 0.672) | 730 (**1.116 / 0.896**) | 126 → 4 |
-| sort (bubble sort, 32) | 3973 (1.000) | 6224 (1.566 / 0.639) | 4930 (**1.240 / 0.806**) | 860 → 213 |
-| matmul (8×8, MUL) | 8638 (1.000) | 10302 (1.192 / 0.839) | 9330 (**1.080 / 0.926**) | 574 → 88 |
+CPI and IPC come from simulation. N is the instruction count measured on the single-cycle core; cycles, stalls and flushes are counted on the pipeline by `testbench/tb_programs.v`.
 
-![Benchmark CPI](figures/benchmark_cpi.png)
+| Benchmark | N | Pipeline cycles | CPI | IPC | Stalls S | Flushes T | N + 4 + S + 2T |
+|---|---|---|---|---|---|---|---|
+| fib (Fibonacci 30) | 160 | 222 | 1.387 | 0.721 | 0 | 29 | 222 ✔ |
+| sum (array of 64) | 654 | 974 | 1.489 | 0.671 | 64 | 126 | 974 ✔ |
+| sort (bubble sort, 32 values) | 3,973 | 6,224 | 1.567 | 0.638 | 527 | 860 | 6,224 ✔ |
+| matmul (8×8, shift-and-add multiply) | 21,742 | 29,326 | 1.349 | 0.741 | 0 | 3,790 | 29,326 ✔ |
 
-*Fig. 3. Measured CPI (from the hardware counters) for the three designs.*
+The single-cycle baseline has CPI 1.000 and IPC 1.000 on every program.
 
-**Findings:**
+![CPI breakdown](figures/benchmark_cpi.png)
 
-- The predictor removes **50–85 %** of the pipeline's extra cycles on loop-heavy code.
-- `sort` keeps the most mispredictions, because whether two elements are swapped depends on the data.
-- The remaining CPI above 1 comes from load-use stalls (64 in `sum`, 512 in `matmul`) and the 4-cycle pipeline fill.
+*Fig. 2. Where the pipeline's cycles go. The bottom segment (1.00) is useful work; the rest is pipeline fill, load-use stalls and branch flushes.*
+
+**Findings.**
+
+- **Flushes dominate.** Taken branches and jumps account for most of the extra cycles, because every taken branch wastes two fetches. Loops are made of taken branches, so loop-heavy code (`fib`, `sum`, `sort`) pays the most.
+- **Load-use stalls matter for memory-heavy code.** `sort` (527 stalls) and `sum` (64) show them; `fib` and `matmul` have none.
+- **The 4-cycle fill is negligible on long programs** (4 of 21,742 for `matmul`) but visible on short ones.
 
 ---
 
-## 5. Implementation Results (FPGA flow)
+## 5. Implementation Results
 
-Vivado (for the Xilinx Artix-7 / Basys 3 named in our Phase I plan) does not run on macOS, and no board was available. We therefore used the open-source flow **Yosys → nextpnr → static timing** on a **Lattice ECP5 LFE5U-85F**. It produces real post-place-and-route timing without needing a board. The board-level top (`fpga/fpga_top.v`: clock, reset button, 16 switches → GPIO_IN, 16 LEDs ← GPIO_OUT) runs a demo program (`fpga/fpga_demo.s`) that uses every instruction type, so synthesis cannot delete unused hardware.
+Vivado, needed for the Xilinx Artix-7 / Basys 3 named in our Phase I plan, does not run on macOS, and no board was available. We therefore used the open-source flow **Yosys → nextpnr → static timing** on a **Lattice ECP5 LFE5U-85F**, which gives real post-place-and-route timing without a board. Both designs are built with the same board-level top (`fpga/fpga_top.v`: clock, reset button, 16 LEDs driven by the written-back value) and run the same demo program (`fpga/fpga_demo.s`), which uses every instruction, so synthesis cannot remove unused hardware.
 
-| Configuration | Fmax (MHz) | Critical path through | LUT4 | Flip-flops | DSP (18x18) |
-|---|---|---|---|---|---|
-| Pipeline (5-stage), RV32IM | **5.5** | muldiv, execution_unit | 14,964 | 2,022 | 4 |
-| Single-cycle, RV32IM | **4.9** | muldiv, exec, dmem | 14,252 | 962 | 4 |
-| Pipeline (5-stage), M removed* | **62.4** | dmem | 6,865 | 2,022 | 0 |
-| Single-cycle, M removed* | **30.4** | dmem | 6,336 | 962 | 0 |
+| Design | Fmax (MHz) | LUT4 | Flip-flops | Critical path |
+|---|---|---|---|---|
+| **5-stage pipeline** | **67.8** | 5,100 | 1,541 | data-memory read (MEM stage) |
+| Single-cycle baseline | 38.8 | 5,161 | 722 | data-memory read after the ALU |
 
-\* M removed = multiply/divide unit replaced by a stub (fpga/muldiv_stub.v) to measure the rest of each core.
+Both designs use about 6 % of the chip's logic. Execution time = cycles / Fmax:
 
-Execution time, full RV32IM cores: time = cycles / Fmax
-
-| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
+| Benchmark | Single-cycle | Pipeline | Speed-up |
 |---|---|---|---|
-| fib | 32.4 µs | 30.8 µs | **1.05×** |
-| matmul | 1,748.6 µs | 1,711.9 µs | **1.02×** |
-| sort | 804.3 µs | 904.6 µs | **0.89×** |
-| sum | 132.4 µs | 133.9 µs | **0.99×** |
+| fib | 4.1 µs | 3.3 µs | **1.26×** |
+| sum | 16.9 µs | 14.4 µs | **1.17×** |
+| sort | 102.4 µs | 91.9 µs | **1.12×** |
+| matmul | 560.5 µs | 432.8 µs | **1.30×** |
 
-Execution time, cores without the M unit (benchmarks that use MUL excluded): time = cycles / Fmax
+**Discussion.**
 
-| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
-|---|---|---|---|
-| fib | 5.3 µs | 2.7 µs | **1.95×** |
-| sort | 130.5 µs | 79.0 µs | **1.65×** |
-| sum | 21.5 µs | 11.7 µs | **1.84×** |
+1. **Pipelining shortens the clock by 1.75×** (67.8 against 38.8 MHz) and costs 1.35–1.57× more cycles, so the net gain is 1.12–1.30×. It is a real but modest gain, because our simple "always not taken" policy loses two cycles on every taken branch.
+2. **The pipeline uses about twice the flip-flops** (1,541 against 722) for its four pipeline registers, with almost the same amount of logic.
+3. **The critical path is the data-memory read** in both designs. Splitting that read, or registering the memory address earlier, would be the next timing optimisation. Reducing the branch penalty (for example with branch prediction) would improve the CPI side.
+4. **Area estimate with a second tool.** Yosys with Xilinx 7-series mapping (`make synth`) gives about 2,056 LUTs and 1,525 flip-flops for the pipelined core (instruction memory excluded).
 
-**What the numbers show:**
-
-1. **The divider sets the clock.** With RV32M, nextpnr's critical path lies entirely inside `muldiv_unit` for both cores, so pipelining cannot help: 5.45 vs 4.94 MHz. With CPI above 1, the pipeline is about as fast as the single-cycle core here (0.89–1.05×). The unit is also more than half of the logic: 14,964 LUT4s with it, 6,865 without.
-2. **Pipelining doubles the clock once the divider is removed.** The pipeline runs at **62.4 MHz** and the single-cycle core at **30.4 MHz (2.05×)**. Even with a CPI of 1.05–1.24, the pipeline finishes the benchmarks **1.65–1.95× sooner**. This is the real benefit of pipelining: execution time = instructions × CPI × clock period.
-3. **The measurement agrees with our earlier estimate.** Logic depth from synthesis predicted the pipeline's clock period to be about 40 / 21 ≈ 1.9× shorter; place-and-route measured 2.05×.
-4. **The next critical path is the data-memory read** (LUT-RAM in MEM, then load alignment and write-back). It is the same in both cores.
-
-**Consequence for Phase III:** replacing the combinational divider with a multi-cycle one (stalling the pipeline for about 32 cycles per divide) should let the full RV32IM pipeline approach the ~62 MHz of the M-less core. This is an expectation, not a measurement.
-
-*Method:* `fpga/run_fmax.sh` (Yosys `synth_ecp5`, nextpnr-ecp5 `--85k --package CABGA381`, seed 1, timing-driven placement), summarised by `fpga/summarize.py`. Benchmark cycle counts come from the simulations in Section 4 (`matmul` is excluded for the M-removed cores because it uses MUL). These are ECP5 numbers; a Xilinx Artix-7 result would differ in absolute MHz.
+*Method:* `scripts/run_fmax.sh` (Yosys `synth_ecp5`, nextpnr-ecp5 `--85k --package CABGA381`, seed 1) and `scripts/summarize_fmax.py`. These are ECP5 results; absolute MHz would differ on an Artix-7, but the comparison between the two designs is what matters.
 
 ---
 
@@ -181,55 +149,51 @@ Execution time, cores without the M unit (benchmarks that use MUL excluded): tim
 
 | Problem | Cause | Solution |
 |---|---|---|
-| Design simulated correctly but did not synthesize | Reset and flush tested together (`!rst_n` OR `flush`) inside an asynchronous-reset block (`pipe_id_ex`, and again later in `pipe_ex_mem`) | Separate the reset branch from the synchronous flush branch |
-| Test script reported success with failing checks | `vvp` exits 0 even when checks fail | The script searches the log for failures and exits 1 |
-| Synthesis reported only 103 cells for a CPU | An empty instruction ROM made every instruction constant, so the tools deleted the datapath | Black-box the instruction memory for area runs; use a real demo program for FPGA runs |
-| FPGA run optimised away the whole CPU | The simulation-only NOP-fill loop in `instruction_memory.v` became memory *write* ports in synthesis, so the program was lost | NOP fill is now inside `` `ifndef SYNTHESIS `` |
-| Trap test timed out | The handler used `t5`/`t6`, which **are** `x30`/`x31` (our result-address and test-number registers) | The handler uses `a6`/`a7` |
+| Design simulated correctly but did not synthesize | `!rst_n OR flush` tested together inside an asynchronous-reset block (`pipe_id_ex`) | Separate the reset branch from the synchronous flush branch |
+| BNE was never tested | No Phase I test ran a BNE instruction; found when an inverted BNE still passed | Subset test with a BNE loop, then the 146-test ISA program |
+| Test script printed "success" even when checks failed | `vvp` exits with 0 even when checks fail | The script now searches the log for failures and exits with 1 |
+| Synthesis reported only 103 cells for a CPU | The empty instruction ROM made every instruction constant, so the tools deleted the datapath | Black-box the ROM for area runs; use a real demo program for FPGA runs |
+| FPGA run removed the whole CPU again | The simulation-only NOP-fill loop in `instruction_memory.v` became memory *write* ports in synthesis, so the program was lost | The fill loop is now inside `` `ifndef SYNTHESIS `` |
+| False combinational-loop warning on the single-cycle core | The register-file bypass multiplexer was always built | The bypass is a `generate` option, off for the single-cycle core |
+| RAM built from flip-flops | A reset loop cleared all 1,024 data words in one cycle | Removed the loop; the RAM starts as zeros in simulation and maps to RAM resources |
 | Instruction count off by one | The testbench sampled signals exactly at the clock edge, before flip-flops update | Sample 1 ns after the edge; three independent counts now agree |
-| Timer compare on the longest path | 64-bit `mtime ≥ mtimecmp` fed the trap and redirect logic in the same cycle | Register `timer_irq` (1-cycle delay, invisible to software) |
 
 ---
 
 ## 7. Scope and Future Work
 
-**Completed in Phase II:** every item planned in the Phase I report except the board demonstration, plus measured CPI/IPC, a single-cycle baseline, and post-place-and-route Fmax.
+**Completed in Phase II:** single-cycle baseline, benchmarks with CPI/IPC, own assembler and generated test program, mutation testing, synthesis and real Fmax, this report.
 
 **Not done / future work:**
 
-- **Board demonstration.** No board or Vivado was available. The demonstration is the simulation, with waveforms and benchmark results. `fpga/fpga_top.v` is ready for a board.
-- **A multi-cycle divider.** The combinational divider dominates area and limits the clock to ~5 MHz (Section 5).
-- **Misaligned-access exceptions, JAL prediction, caches**, and the official `riscv-arch-test` compliance suite.
+- **Board demonstration.** No board or Vivado was available; the demonstration is the simulation with waveforms and benchmark results. `fpga/fpga_top.v` is ready for a board.
+- **Branch prediction** (a separate project in the course) would cut the 2-cycle cost of a taken branch.
+- **A faster memory path** and caches, since the data-memory read limits the clock.
 
 ---
 
-## 8. Individual Team Contributions (Phase II)
+## 8. Individual Team Contributions
 
-Taken from the project's git history:
+The Phase I contributions are listed in `docs/CONTRIBUTIONS.md`. In Phase II:
 
 | Member | Phase II contribution |
 |---|---|
-| Naveen Kumar | Integration of all Phase II features into the core; RV32M unit; CSR/trap unit; timer; store alignment; single-cycle baseline; assembler and generated tests; benchmarks; synthesis and FPGA flow; documentation |
-| Aditya Raj | 2-bit branch predictor (`branch_predictor_2bit.v`) and its unit test |
-| Archit Mamodiya | Hardware performance counter (`perf_counter.v`) and its unit test |
-| Shagun Vishnoi | Byte/half-word load alignment unit (`mem_align_unit.v`) and its unit test |
-| Ritik Ranjan | Memory-mapped GPIO unit (`gpio_unit.v`) and its unit test |
+| Naveen Kumar | Single-cycle baseline, benchmarks, assembler and generated tests, synthesis fixes, FPGA flow, this report and the learning guide |
+| Aditya Raj | Hazard and forwarding logic and testbenches (Phase I), which the benchmarks and the cycle model exercise |
+| Archit Mamodiya, Shagun Vishnoi, Ritik Ranjan | Documentation, report and diagram contributions as listed in `docs/CONTRIBUTIONS.md` |
+
+Teammates also wrote optional extension modules during Phase II (a 2-bit branch predictor, a performance counter, a load-alignment unit and a GPIO unit). They are not part of the final design, which follows the project specification, but they remain in the repository's git history.
 
 ---
 
 ## 9. References
 
-
 [1] A. Waterman and K. Asanović, "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA," Version 20191213, RISC-V Foundation, Dec. 2019.
 
-[2] A. Waterman, K. Asanović and J. Hauser, "The RISC-V Instruction Set Manual, Volume II: Privileged Architecture," Version 20211203, RISC-V International, 2021.
+[2] D. A. Patterson and J. L. Hennessy, *Computer Organization and Design: The Hardware/Software Interface (RISC-V Edition)*, Morgan Kaufmann, 2017.
 
-[3] D. A. Patterson and J. L. Hennessy, *Computer Organization and Design: The Hardware/Software Interface (RISC-V Edition)*, Morgan Kaufmann, 2017.
+[3] J. L. Hennessy and D. A. Patterson, *Computer Architecture: A Quantitative Approach*, 6th ed., Morgan Kaufmann, 2019.
 
-[4] J. L. Hennessy and D. A. Patterson, *Computer Architecture: A Quantitative Approach*, 6th ed., Morgan Kaufmann, 2019.
+[4] C. Wolf, "Yosys Open SYnthesis Suite." [Online]. Available: https://yosyshq.net/yosys/
 
-[5] J. E. Smith, "A Study of Branch Prediction Strategies," in *Proc. 8th Annu. Int. Symp. Computer Architecture (ISCA)*, 1981, pp. 135–148.
-
-[6] C. Wolf, "Yosys Open SYnthesis Suite." [Online]. Available: https://yosyshq.net/yosys/
-
-[7] YosysHQ, "nextpnr — a portable FPGA place and route tool." [Online]. Available: https://github.com/YosysHQ/nextpnr
+[5] YosysHQ, "nextpnr — a portable FPGA place and route tool." [Online]. Available: https://github.com/YosysHQ/nextpnr

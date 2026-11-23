@@ -30,3 +30,4 @@ video/presenter_pick/
 # FPGA flow outputs that are large or regenerated (keep *.nextpnr.log and *.utilization.txt as evidence)
 fpga/results/*.json
 fpga/results/*.yosys.log
+docs/IEEE_Phase2_Project_Report.html

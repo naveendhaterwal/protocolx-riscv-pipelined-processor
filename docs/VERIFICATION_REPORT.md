@@ -74,7 +74,7 @@ All tests written for Phase I have been simulated, checked with automated assert
 
 The complete, unabridged cycle-by-cycle trace of all test runs is saved in [`simulation/simulation_results.log`](../simulation/simulation_results.log). Anyone can reproduce this identical output by running:
 ```bash
-./simulation/run_sim.sh
+./scripts/run_sim.sh
 ```
 
 ---
