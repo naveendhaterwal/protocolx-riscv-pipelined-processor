@@ -1,26 +1,15 @@
-| Configuration | Fmax (MHz) | Critical path through | LUT4 | Flip-flops | DSP (18x18) |
-|---|---|---|---|---|---|
-| Pipeline (5-stage), RV32IM | **5.5** | muldiv, execution_unit | 14,964 | 2,022 | 4 |
-| Single-cycle, RV32IM | **4.9** | muldiv, exec, dmem | 14,252 | 962 | 4 |
-| Pipeline (5-stage), M removed* | **62.4** | dmem | 6,865 | 2,022 | 0 |
-| Single-cycle, M removed* | **30.4** | dmem | 6,336 | 962 | 0 |
+| Design | Fmax (MHz) | Critical path through | LUT4 | Flip-flops |
+|---|---|---|---|---|
+| 5-stage pipeline | **67.8** | dmem | 5,100 | 1,541 |
+| Single-cycle baseline | **38.8** | dmem | 5,161 | 722 |
 
-\* M removed = multiply/divide unit replaced by a stub (fpga/muldiv_stub.v) to measure the rest of each core.
+Clock speed-up from pipelining: **1.75x** (67.8 MHz vs 38.8 MHz).
 
-Execution time, full RV32IM cores: time = cycles / Fmax
+Execution time = cycles / Fmax (single-cycle cycles = N, pipeline cycles measured):
 
-| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
+| Benchmark | Single-cycle | Pipeline | Speed-up |
 |---|---|---|---|
-| fib | 32.4 µs | 30.8 µs | **1.05×** |
-| matmul | 1,748.6 µs | 1,711.9 µs | **1.02×** |
-| sort | 804.3 µs | 904.6 µs | **0.89×** |
-| sum | 132.4 µs | 133.9 µs | **0.99×** |
-
-Execution time, cores without the M unit (benchmarks that use MUL excluded): time = cycles / Fmax
-
-| Benchmark | Single-cycle | Pipeline + predictor | Speed-up |
-|---|---|---|---|
-| fib | 5.3 µs | 2.7 µs | **1.95×** |
-| sort | 130.5 µs | 79.0 µs | **1.65×** |
-| sum | 21.5 µs | 11.7 µs | **1.84×** |
-
+| fib | 4.1 µs | 3.3 µs | **1.26x** |
+| matmul | 560.5 µs | 432.8 µs | **1.30x** |
+| sort | 102.4 µs | 91.9 µs | **1.12x** |
+| sum | 16.9 µs | 14.4 µs | **1.17x** |

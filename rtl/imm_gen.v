@@ -21,8 +21,7 @@ module imm_gen (
             // I-Type: Arithmetic Immediates, Loads, JALR
             `OPCODE_I_TYPE,
             `OPCODE_LOAD,
-            `OPCODE_JALR,
-            `OPCODE_SYSTEM: begin   // SYSTEM: bits [11:0] hold the CSR address
+            `OPCODE_JALR: begin
                 immediate = {{20{instruction[31]}}, instruction[31:20]};
             end
 

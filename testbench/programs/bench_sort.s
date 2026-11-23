@@ -1,6 +1,6 @@
 # bench_sort.s - bubble sort of 32 pseudo-random words, then check the order and the sum.
 # Exercises: data-dependent branches (hard to predict), loads/stores.   Expected sum = 17008
-    li   x30, 0x800000F0
+    li   x30, 0xFFC               # TOHOST = last RAM word
     li   s0, 0x100                # array base
     li   s1, 32                   # N
     li   t1, 7                    # seed

@@ -1,0 +1,357 @@
+
+
+Info: Logic utilisation before packing:
+Info:     Total LUT4s:      5072/83640     6%
+Info:         logic LUTs:   4104/83640     4%
+Info:         carry LUTs:    200/83640     0%
+Info:           RAM LUTs:    512/10455     4%
+Info:          RAMW LUTs:    256/20910     1%
+
+Info:      Total DFFs:      1541/83640     1%
+
+Info: Packing IOs..
+Info: Packing constants..
+Info: Packing carries...
+Info: Packing LUTs...
+Info: Packing LUT5-7s...
+Info: Packing FFs...
+Info:     324 FFs paired with LUTs.
+Info: Generating derived timing constraints...
+Info: Promoting globals...
+Info:     promoting clock net clk$TRELLIS_IO_IN to global network
+Info: Checksum: 0xdae83041
+
+Info: Device utilisation:
+Info: 	          TRELLIS_IO:      18/    365     4%
+Info: 	                DCCA:       1/     56     1%
+Info: 	              DP16KD:       0/    208     0%
+Info: 	          MULT18X18D:       0/    156     0%
+Info: 	              ALU54B:       0/     78     0%
+Info: 	             EHXPLLL:       0/      4     0%
+Info: 	             EXTREFB:       0/      2     0%
+Info: 	                DCUA:       0/      2     0%
+Info: 	           PCSCLKDIV:       0/      2     0%
+Info: 	             IOLOGIC:       0/    224     0%
+Info: 	            SIOLOGIC:       0/    141     0%
+Info: 	                 GSR:       0/      1     0%
+Info: 	               JTAGG:       0/      1     0%
+Info: 	                OSCG:       0/      1     0%
+Info: 	               SEDGA:       0/      1     0%
+Info: 	                 DTR:       0/      1     0%
+Info: 	             USRMCLK:       0/      1     0%
+Info: 	             CLKDIVF:       0/      4     0%
+Info: 	           ECLKSYNCB:       0/     10     0%
+Info: 	             DLLDELD:       0/      8     0%
+Info: 	              DDRDLL:       0/      4     0%
+Info: 	             DQSBUFM:       0/     14     0%
+Info: 	     TRELLIS_ECLKBUF:       0/      8     0%
+Info: 	        ECLKBRIDGECS:       0/      2     0%
+Info: 	                DCSC:       0/      2     0%
+Info: 	                 GND:       1/      1   100%
+Info: 	          TRELLIS_FF:    1541/  83640     1%
+Info: 	                 VCC:       1/      1   100%
+Info: 	        TRELLIS_COMB:    5100/  83640     6%
+Info: 	        TRELLIS_RAMW:     128/  10455     1%
+
+Info: Placed 2 cells based on constraints.
+Info: Creating initial analytic placement for 4509 cells, random placement wirelen = 467157.
+Info:     at initial placer iter 0, wirelen = 2375
+Info:     at initial placer iter 1, wirelen = 1924
+Info:     at initial placer iter 2, wirelen = 1939
+Info:     at initial placer iter 3, wirelen = 1877
+Info: Running main analytical placer, max placement attempts per cell = 5763012.
+Info:     at iteration #1, type ALL: wirelen solved = 1893, spread = 39808, legal = 40462; time = 0.07s
+Info:     at iteration #2, type ALL: wirelen solved = 5614, spread = 28256, legal = 28869; time = 0.07s
+Info:     at iteration #3, type ALL: wirelen solved = 9951, spread = 27067, legal = 27889; time = 0.06s
+Info:     at iteration #4, type ALL: wirelen solved = 11463, spread = 26130, legal = 27012; time = 0.06s
+Info:     at iteration #5, type ALL: wirelen solved = 12561, spread = 25533, legal = 26546; time = 0.06s
+Info:     at iteration #6, type ALL: wirelen solved = 13783, spread = 25209, legal = 25886; time = 0.05s
+Info:     at iteration #7, type ALL: wirelen solved = 14688, spread = 24788, legal = 25497; time = 0.05s
+Info:     at iteration #8, type ALL: wirelen solved = 15509, spread = 24201, legal = 25038; time = 0.06s
+Info:     at iteration #9, type ALL: wirelen solved = 15850, spread = 23766, legal = 24633; time = 0.05s
+Info:     at iteration #10, type ALL: wirelen solved = 16305, spread = 23232, legal = 24011; time = 0.05s
+Info:     at iteration #11, type ALL: wirelen solved = 16423, spread = 24057, legal = 25149; time = 0.07s
+Info:     at iteration #12, type ALL: wirelen solved = 17233, spread = 24674, legal = 25515; time = 0.07s
+Info:     at iteration #13, type ALL: wirelen solved = 17882, spread = 24102, legal = 24979; time = 0.07s
+Info:     at iteration #14, type ALL: wirelen solved = 17756, spread = 24159, legal = 24952; time = 0.06s
+Info:     at iteration #15, type ALL: wirelen solved = 18440, spread = 23215, legal = 23878; time = 0.06s
+Info:     at iteration #16, type ALL: wirelen solved = 18109, spread = 22784, legal = 23721; time = 0.06s
+Info:     at iteration #17, type ALL: wirelen solved = 18059, spread = 23186, legal = 23913; time = 0.10s
+Info:     at iteration #18, type ALL: wirelen solved = 18457, spread = 23312, legal = 23958; time = 0.07s
+Info:     at iteration #19, type ALL: wirelen solved = 19060, spread = 22478, legal = 23351; time = 0.07s
+Info: HeAP Placer Time: 1.85s
+Info:   of which solving equations: 1.31s
+Info:   of which spreading cells: 0.13s
+Info:   of which strict legalisation: 0.06s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 1701, wirelen = 23351
+Info:   at iteration #5: temp = 0.000000, timing cost = 1758, wirelen = 21246
+Info:   at iteration #10: temp = 0.000000, timing cost = 1493, wirelen = 20735
+Info:   at iteration #15: temp = 0.000000, timing cost = 1557, wirelen = 20548
+Info:   at iteration #20: temp = 0.000000, timing cost = 1503, wirelen = 20457
+Info:   at iteration #20: temp = 0.000000, timing cost = 1498, wirelen = 20462 
+Info: SA placement time 3.53s
+
+Info: Max frequency for clock '$glbnet$clk$TRELLIS_IO_IN': 54.63 MHz (PASS at 25.00 MHz)
+
+Info: Max delay <async>                           -> posedge $glbnet$clk$TRELLIS_IO_IN: 4.64 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN -> <async>                          : 9.24 ns
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 20 endpoint(s)
+Info:          + represents [1,20) endpoint(s)
+Info: [ 21694,  22560) |+
+Info: [ 22560,  23426) |******+
+Info: [ 23426,  24292) |********+
+Info: [ 24292,  25158) |******+
+Info: [ 25158,  26024) |+
+Info: [ 26024,  26890) | 
+Info: [ 26890,  27756) | 
+Info: [ 27756,  28622) |**+
+Info: [ 28622,  29488) |*****+
+Info: [ 29488,  30354) |**+
+Info: [ 30354,  31220) |*******+
+Info: [ 31220,  32086) |*************+
+Info: [ 32086,  32952) |*********************+
+Info: [ 32952,  33818) |********************************************+
+Info: [ 33818,  34684) |************************************************************ 
+Info: [ 34684,  35550) |***************************************************+
+Info: [ 35550,  36416) |**********************************************************+
+Info: [ 36416,  37282) |*********************************************+
+Info: [ 37282,  38148) |*****************+
+Info: [ 38148,  39014) |****+
+Info: Checksum: 0xec780149
+Info: Routing globals...
+Info:     routing clock net $glbnet$clk$TRELLIS_IO_IN using global 0
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 25219 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |      283        716 |  283   716 |     24690|       0.23       0.23|
+Info:       2000 |      557       1442 |  274   726 |     24203|       0.17       0.40|
+Info:       3000 |      817       2182 |  260   740 |     23752|       0.15       0.56|
+Info:       4000 |     1001       2998 |  184   816 |     23149|       0.16       0.71|
+Info:       5000 |     1234       3765 |  233   767 |     22745|       0.16       0.87|
+Info:       6000 |     1499       4500 |  265   735 |     22442|       0.17       1.05|
+Info:       7000 |     1681       5318 |  182   818 |     21769|       0.14       1.19|
+Info:       8000 |     1908       6091 |  227   773 |     21209|       0.15       1.33|
+Info:       9000 |     2108       6891 |  200   800 |     20659|       0.18       1.51|
+Info:      10000 |     2351       7648 |  243   757 |     20255|       0.19       1.70|
+Info:      11000 |     2567       8432 |  216   784 |     19810|       0.20       1.90|
+Info:      12000 |     2814       9185 |  247   753 |     19317|       0.16       2.06|
+Info:      13000 |     3063       9936 |  249   751 |     19069|       0.23       2.29|
+Info:      14000 |     3282      10717 |  219   781 |     18586|       0.20       2.49|
+Info:      15000 |     3494      11505 |  212   788 |     18119|       0.17       2.66|
+Info:      16000 |     3725      12274 |  231   769 |     17636|       0.13       2.79|
+Info:      17000 |     3915      13084 |  190   810 |     17046|       0.16       2.94|
+Info:      18000 |     4119      13880 |  204   796 |     16533|       0.15       3.09|
+Info:      19000 |     4337      14662 |  218   782 |     15973|       0.14       3.23|
+Info:      20000 |     4562      15437 |  225   775 |     15398|       0.15       3.38|
+Info:      21000 |     4786      16213 |  224   776 |     14770|       0.17       3.55|
+Info:      22000 |     5059      16940 |  273   727 |     14158|       0.19       3.74|
+Info:      23000 |     5306      17693 |  247   753 |     13520|       0.16       3.90|
+Info:      24000 |     5622      18377 |  316   684 |     13058|       0.19       4.09|
+Info:      25000 |     5941      19058 |  319   681 |     12833|       0.20       4.29|
+Info:      26000 |     6221      19778 |  280   720 |     12309|       0.14       4.43|
+Info:      27000 |     6478      20521 |  257   743 |     11857|       0.14       4.57|
+Info:      28000 |     6803      21196 |  325   675 |     11467|       0.16       4.73|
+Info:      29000 |     7131      21868 |  328   672 |     10885|       0.13       4.86|
+Info:      30000 |     7458      22528 |  327   660 |     10424|       0.15       5.02|
+Info:      31000 |     7811      23170 |  353   642 |     10113|       0.17       5.18|
+Info:      32000 |     8050      23887 |  239   717 |      9635|       0.14       5.32|
+Info:      33000 |     8318      24550 |  268   663 |      9088|       0.18       5.50|
+Info:      34000 |     8537      25266 |  219   716 |      8643|       0.18       5.68|
+Info:      35000 |     8776      25908 |  239   642 |      8048|       0.11       5.79|
+Info:      36000 |     9055      26534 |  279   626 |      7456|       0.13       5.92|
+Info:      37000 |     9413      27111 |  358   577 |      6931|       0.14       6.06|
+Info:      38000 |     9768      27659 |  355   548 |      6372|       0.15       6.21|
+Info:      39000 |    10114      28252 |  346   593 |      5775|       0.15       6.36|
+Info:      40000 |    10411      28922 |  297   670 |      5363|       0.16       6.52|
+Info:      41000 |    10625      29700 |  214   778 |      4753|       0.16       6.68|
+Info:      42000 |    10914      30379 |  289   679 |      4097|       0.18       6.86|
+Info:      43000 |    11225      31052 |  311   673 |      3664|       0.22       7.08|
+Info:      44000 |    11608      31664 |  383   612 |      3113|       0.21       7.29|
+Info:      45000 |    12018      32251 |  410   587 |      2850|       0.23       7.52|
+Info:      46000 |    12371      32897 |  353   646 |      2378|       0.19       7.71|
+Info:      47000 |    12606      33662 |  235   765 |      2329|       0.47       8.18|
+Info:      48000 |    13017      34250 |  411   588 |      1841|       0.20       8.38|
+Info:      49000 |    13246      35020 |  229   770 |      1149|       0.16       8.54|
+Info:      50000 |    13367      35899 |  121   879 |       301|       0.08       8.62|
+Info:      50442 |    13447      36153 |   80   254 |         0|       0.21       8.83|
+Info: Routing complete.
+Info: Router1 time 8.83s
+Info: Checksum: 0x12f7ca90
+
+Info: Critical path report for clock '$glbnet$clk$TRELLIS_IO_IN' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source g_pipeline.u_core.u_dmem.memory.0.0_DO_2_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_DI_Q_LUT4_Z_B_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_1.Q
+Info:    routing  1.20  1.73 Net g_pipeline.u_core.u_dmem.memory.0.0_DO_2_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_DI_Q_LUT4_Z_B_TRELLIS_FF_DI_Q[3] (58,23) -> (58,19)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z_L6MUX21_Z_D1_PFUMX_Z_BLUT_LUT4_Z.D
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.40  2.13 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z_L6MUX21_Z_D1_PFUMX_Z_BLUT_LUT4_Z.OFX
+Info:    routing  0.00  2.13 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z_L6MUX21_Z_D1 (58,19) -> (58,19)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.FXB
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:141.38-141.40
+Info:      logic  0.24  2.37 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.OFX
+Info:    routing  1.24  3.61 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_LUT4_Z_D_LUT4_Z_C_LUT4_C_Z[4] (58,19) -> (62,23)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_PFUMX_Z_BLUT_LUT4_Z.M
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.26  3.87 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_LUT4_B_D_LUT4_Z_C_LUT4_A_Z_TRELLIS_FF_DI_Q_PFUMX_Z_BLUT_LUT4_Z.OFX
+Info:    routing  1.79  5.66 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_S0_LUT4_C_Z_TRELLIS_FF_DI_Q_LUT4_B_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_DI_Q_TRELLIS_FF_DI_Q_LUT4_C_Z_PFUMX_BLUT_Z[4] (62,23) -> (79,21)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_A1_LUT4_Z_D_PFUMX_Z_BLUT_LUT4_Z.M
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.26  5.91 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_A1_LUT4_Z_D_PFUMX_Z_BLUT_LUT4_Z.OFX
+Info:    routing  2.01  7.92 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_A1_LUT4_Z_D[1] (79,21) -> (66,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.B
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.45  8.37 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.37 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN (66,25) -> (66,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.44 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  8.44 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (66,25) -> (66,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  8.44 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.44 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN (66,25) -> (66,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.51 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  8.51 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (66,25) -> (66,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  8.51 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.51 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN (66,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.58 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  8.58 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  8.58 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.58 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.65 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  8.65 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_FCI_INT (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  8.65 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.65 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT_CIN (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.72 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT$CCU2_COMB0.FCO
+Info:    routing  0.00  8.72 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT$CCU2_FCI_INT (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT$CCU2_COMB1.FCI
+Info:      logic  0.00  8.72 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN_CCU2C_COUT$CCU2_COMB1.FCO
+Info:    routing  0.00  8.72 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_CIN (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0$CCU2_COMB0.FCI
+Info:                          Defined in:
+Info:                               rtl/execution_unit.v:74.45-74.75
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/arith_map_ccu2c.v:74.7-80.4
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/ccu2c_sim.vh:9.9-9.13
+Info:      logic  0.07  8.79 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0$CCU2_COMB0.FCO
+Info:    routing  0.00  8.79 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0$CCU2_FCI_INT (67,25) -> (67,25)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0$CCU2_COMB1.FCI
+Info:      logic  0.00  8.79 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0$CCU2_COMB1.FCO
+Info:    routing  0.00  8.79 Net $nextpnr_CCU2C_11$CIN (67,25) -> (68,25)
+Info:                          Sink $nextpnr_CCU2C_11$CCU2_COMB0.FCI
+Info:      logic  0.44  9.24 Source $nextpnr_CCU2C_11$CCU2_COMB0.F
+Info:    routing  0.72  9.96 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_CIN_CCU2C_COUT_A0_LUT4_Z_D_CCU2C_A0_COUT[5] (68,25) -> (67,26)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.0_DO_2_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_1_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_DI_Q_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.M
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.26  10.22 Source g_pipeline.u_core.u_dmem.memory.0.0_DO_2_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_1_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_DI_Q_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.OFX
+Info:    routing  1.27  11.48 Net g_pipeline.u_core.u_dmem.memory.0.0_DO_2_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_1_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_DI_Q[5] (67,26) -> (64,21)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_L6MUX21_Z_D1_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.M
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.26  11.74 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_L6MUX21_Z_D1_L6MUX21_Z_D1_PFUMX_Z_ALUT_LUT4_Z.OFX
+Info:    routing  0.00  11.74 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_L6MUX21_Z_D1 (64,21) -> (64,21)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_L6MUX21_Z_D1_L6MUX21_Z_D0_PFUMX_Z_ALUT_LUT4_Z.FXB
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:157.70-157.72
+Info:      logic  0.24  11.98 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_L6MUX21_Z_D1_L6MUX21_Z_D0_PFUMX_Z_ALUT_LUT4_Z.OFX
+Info:    routing  0.75  12.73 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z[4] (64,21) -> (63,24)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_LUT4_D.D
+Info:                          Defined in:
+Info:                               /Users/n2/tools/oss-cad-suite-20261112/oss-cad-suite/libexec/../share/yosys/lattice/cells_map_trellis.v:108.23-108.24
+Info:      logic  0.24  12.97 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_LUT4_D.F
+Info:    routing  1.79  14.76 Net g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_B_C_CCU2C_S1_B0_TRELLIS_FF_Q_DI_PFUMX_Z_BLUT_LUT4_Z_A_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_D_LUT4_Z_D_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_Z_B_LUT4_C_Z_LUT4_D_Z_LUT4_C_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_LUT4_Z_C_LUT4_Z_C_LUT4_D_Z_LUT4_D_Z (63,24) -> (77,20)
+Info:                          Sink g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_S1_LUT4_C_Z_TRELLIS_FF_DI.CE
+Info:      setup  0.00  14.76 Source g_pipeline.u_core.u_dmem.memory.0.7_DO_3_LUT4_B_Z_LUT4_D_Z_LUT4_D_Z_TRELLIS_FF_DI_Q_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_TRELLIS_FF_Q_DI_LUT4_Z_B_TRELLIS_FF_Q_DI_LUT4_Z_C_CCU2C_S1_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_CIN_CCU2C_COUT_S1_LUT4_C_Z_TRELLIS_FF_DI.CE
+Info: 3.99 ns logic, 10.77 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge $glbnet$clk$TRELLIS_IO_IN':
+Info:       type curr  total name
+Info:     source  0.00  0.00 Source btn_rst$tr_io.O
+Info:    routing  2.30  2.30 Net btn_rst$TRELLIS_IO_IN (0,59) -> (28,48)
+Info:                          Sink btn_rst_LUT4_D.D
+Info:                          Defined in:
+Info:                               fpga/fpga_top.v:27.24-27.31
+Info:      logic  0.24  2.53 Source btn_rst_LUT4_D.F
+Info:    routing  0.13  2.66 Net btn_rst_LUT4_D_Z (28,48) -> (28,48)
+Info:                          Sink rst_sync_TRELLIS_FF_Q.DI
+Info:      setup  0.00  2.66 Source rst_sync_TRELLIS_FF_Q.DI
+Info: 0.24 ns logic, 2.43 ns routing
+
+Info: Critical path report for cross-domain path 'posedge $glbnet$clk$TRELLIS_IO_IN' -> '<async>':
+Info:       type curr  total name
+Info:   clk-to-q  0.52  0.52 Source led_TRELLIS_FF_Q_3.Q
+Info:    routing  5.51  6.04 Net led[3]$TRELLIS_IO_OUT (57,47) -> (18,95)
+Info:                          Sink led[3]$tr_io.I
+Info:                          Defined in:
+Info:                               fpga/fpga_top.v:57.16-57.21
+Info: 0.52 ns logic, 5.51 ns routing
+
+Info: Max frequency for clock '$glbnet$clk$TRELLIS_IO_IN': 67.76 MHz (PASS at 25.00 MHz)
+
+Info: Max delay <async>                           -> posedge $glbnet$clk$TRELLIS_IO_IN: 2.66 ns
+Info: Max delay posedge $glbnet$clk$TRELLIS_IO_IN -> <async>                          : 6.04 ns
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 20 endpoint(s)
+Info:          + represents [1,20) endpoint(s)
+Info: [ 25243,  25934) |*+
+Info: [ 25934,  26625) |*********+
+Info: [ 26625,  27316) |**********+
+Info: [ 27316,  28007) |+
+Info: [ 28007,  28698) |+
+Info: [ 28698,  29389) | 
+Info: [ 29389,  30080) | 
+Info: [ 30080,  30771) |+
+Info: [ 30771,  31462) |****+
+Info: [ 31462,  32153) |******+
+Info: [ 32153,  32844) |**********+
+Info: [ 32844,  33535) |**********+
+Info: [ 33535,  34226) |********************+
+Info: [ 34226,  34917) |*********************+
+Info: [ 34917,  35608) |*****************************************************+
+Info: [ 35608,  36299) |*********************************************************+
+Info: [ 36299,  36990) |****************************************************+
+Info: [ 36990,  37681) |************************************************************ 
+Info: [ 37681,  38372) |******************+
+Info: [ 38372,  39063) |****+
+
+Info: Program finished normally.
