@@ -15,24 +15,25 @@
 `include "riscv_defines_n.vh"
 
 module data_memory #(
-    parameter MEM_DEPTH = 1024          // how many 32-bit boxes (1024 x 4 bytes = 4 KB)
+    parameter MEM_DEPTH = 1024          // how many 32-bit boxes (max 1024 = 4 KB; FPGA uses 256)
 )(
     input  wire              clk,
     input  wire              rst_n,      // not used (kept so the ports do not change)
     input  wire              mem_read,   // 1 = this instruction is a load
     input  wire              mem_write,  // 1 = this instruction is a store
-    input  wire [`XLEN-1:0]  address,    // BYTE address, comes from the ALU
-    input  wire [`XLEN-1:0]  write_data, // value to store
-    output wire [`XLEN-1:0]  read_data   // value that was loaded
+    input  wire [31:0]       address,    // BYTE address, comes from the ALU
+    input  wire [31:0]       write_data, // value to store
+    output wire [31:0]       read_data   // value that was loaded
 );
 
     // The memory itself: MEM_DEPTH boxes, each 32 bits wide.
-    reg [`XLEN-1:0] memory [0:MEM_DEPTH-1];
+    reg [31:0] memory [0:MEM_DEPTH-1];
 
     // A byte address counts bytes (0, 1, 2, 3, 4 ...). Our boxes are 4 bytes
     // wide, so the box number is the address divided by 4.
-    // "address[...:2]" simply drops the lowest 2 bits, which means "divide by 4".
-    wire [$clog2(MEM_DEPTH)-1:0] box_number = address[$clog2(MEM_DEPTH)+1:2];
+    // "address[11:2]" drops the lowest 2 bits (= divide by 4) and keeps 10 bits,
+    // enough to pick one of up to 1024 boxes (2^10 = 1024).
+    wire [9:0] box_number = address[11:2];
 
     // Safety check: is the address really inside our memory?
     wire address_is_valid = (address < (MEM_DEPTH * 4));
